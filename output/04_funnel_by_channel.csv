@@ -1,0 +1,11 @@
+channel,channel_type,visits,leads,mqls,sqls,customers,visit_to_lead,lead_to_mql,mql_to_sql,sql_to_customer,visit_to_customer,median_days_to_win,biggest_leak_after_lead
+Email,Owned,13798,1030,688,316,92,0.0746,0.668,0.4593,0.2911,0.00667,19.0,SQL -> Customer
+Google Search,Paid,30879,2084,1231,609,162,0.0675,0.5907,0.4947,0.266,0.00525,21.0,SQL -> Customer
+LinkedIn Ads,Paid,8800,460,315,187,45,0.0523,0.6848,0.5937,0.2406,0.00511,19.0,SQL -> Customer
+Direct,Organic,22423,1210,741,371,111,0.054,0.6124,0.5007,0.2992,0.00495,20.0,SQL -> Customer
+Referral,Organic,9343,441,241,105,21,0.0472,0.5465,0.4357,0.2,0.00225,17.0,SQL -> Customer
+Organic Search,Organic,41109,1634,849,369,85,0.0397,0.5196,0.4346,0.2304,0.00207,19.0,SQL -> Customer
+Affiliate,Paid,22605,778,399,166,37,0.0344,0.5129,0.416,0.2229,0.00164,25.0,SQL -> Customer
+Meta Ads,Paid,52102,1607,672,262,58,0.0308,0.4182,0.3899,0.2214,0.00111,20.0,SQL -> Customer
+TikTok Ads,Paid,16434,167,47,15,4,0.0102,0.2814,0.3191,0.2667,0.00024,16.5,SQL -> Customer
+Google Display,Paid,42245,528,171,62,8,0.0125,0.3239,0.3626,0.129,0.00019,22.0,SQL -> Customer

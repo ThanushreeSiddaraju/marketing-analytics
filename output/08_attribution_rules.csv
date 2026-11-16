@@ -1,0 +1,41 @@
+model,channel,leads,customers,revenue,revenue_share
+first_touch,Google Search,1665.0,129.0,103800.0,0.1988
+first_touch,Meta Ads,1761.0,89.0,75707.0,0.145
+first_touch,Organic Search,1643.0,83.0,69205.0,0.1326
+first_touch,Direct,1028.0,82.0,66400.0,0.1272
+first_touch,Email,804.0,63.0,62698.0,0.1201
+first_touch,Google Display,1008.0,51.0,42539.0,0.0815
+first_touch,LinkedIn Ads,421.0,32.0,42530.0,0.0815
+first_touch,Affiliate,815.0,47.0,32354.0,0.062
+first_touch,Referral,419.0,30.0,19540.0,0.0374
+first_touch,TikTok Ads,375.0,17.0,7241.0,0.0139
+last_touch,Google Search,2084.0,162.0,133897.0,0.2565
+last_touch,Direct,1210.0,111.0,94152.0,0.1804
+last_touch,Email,1030.0,92.0,90891.0,0.1741
+last_touch,LinkedIn Ads,460.0,45.0,62854.0,0.1204
+last_touch,Organic Search,1634.0,85.0,59044.0,0.1131
+last_touch,Affiliate,778.0,37.0,31495.0,0.0603
+last_touch,Meta Ads,1607.0,58.0,26499.0,0.0508
+last_touch,Referral,441.0,21.0,16021.0,0.0307
+last_touch,Google Display,528.0,8.0,6573.0,0.0126
+last_touch,TikTok Ads,167.0,4.0,588.0,0.0011
+linear,Google Search,1814.86,140.49,113261.85,0.217
+linear,Direct,1096.73,91.78,75690.2,0.145
+linear,Email,882.44,75.41,73046.09,0.1399
+linear,Organic Search,1641.71,83.81,65643.09,0.1257
+linear,Meta Ads,1703.83,74.61,54258.07,0.1039
+linear,LinkedIn Ads,433.45,38.2,50551.5,0.0968
+linear,Affiliate,801.17,43.4,34083.02,0.0653
+linear,Google Display,842.77,36.06,29304.55,0.0561
+linear,Referral,421.19,25.06,17972.1,0.0344
+linear,TikTok Ads,300.85,14.19,8203.54,0.0157
+position_based,Google Search,1849.09,143.46,116995.37,0.2241
+position_based,Direct,1109.2,94.54,78421.51,0.1502
+position_based,Email,902.63,76.34,75293.61,0.1442
+position_based,Organic Search,1640.42,84.14,64758.08,0.1241
+position_based,Meta Ads,1691.01,74.04,52015.48,0.0996
+position_based,LinkedIn Ads,437.89,38.32,51826.32,0.0993
+position_based,Affiliate,798.26,42.77,33093.59,0.0634
+position_based,Google Display,799.73,31.95,26027.71,0.0499
+position_based,Referral,426.6,25.47,18054.5,0.0346
+position_based,TikTok Ads,284.16,11.98,5527.84,0.0106

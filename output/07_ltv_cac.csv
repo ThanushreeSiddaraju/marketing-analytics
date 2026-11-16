@@ -1,0 +1,11 @@
+channel,channel_type,customers,avg_mrr,customer_months,churned,monthly_churn,projected_ltv,cac,ltv_to_cac,payback_months
+Email,Owned,92,190.3,459.0,16,0.0349,5459.36,67.63,80.73,0.4
+LinkedIn Ads,Paid,45,247.89,246.0,6,0.0244,8924.0,1263.18,7.06,5.1
+Affiliate,Paid,37,151.7,205.0,10,0.0488,3109.91,536.22,5.8,3.5
+Google Search,Paid,162,160.73,803.0,42,0.0523,3072.97,625.87,4.91,3.9
+Meta Ads,Paid,58,116.24,251.0,17,0.0677,1716.27,1232.64,1.39,10.6
+Google Display,Paid,8,130.25,27.0,3,0.1111,1172.25,4099.6,0.29,31.5
+TikTok Ads,Paid,4,49.0,12.0,2,0.1667,294.0,5149.38,0.06,105.1
+Referral,Organic,21,115.67,129.0,4,0.031,3730.25,,,
+Direct,Organic,111,178.73,598.0,27,0.0452,3958.53,,,
+Organic Search,Organic,85,154.29,406.0,28,0.069,2237.26,,,

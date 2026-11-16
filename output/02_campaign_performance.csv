@@ -1,0 +1,20 @@
+campaign_id,campaign_name,channel,objective,start_date,end_date,spend,impressions,clicks,visits,leads,customers,revenue,ctr,cpc,visit_to_lead,cost_per_lead,cac,roas,roas_rank
+C016,Email | Trial Nurture Sequence,Email,Conversion,2025-01-01,2025-12-31,3625.86,275207.0,8607.0,8181,631,54,74729.0,0.0313,0.42,0.0771,5.75,67.15,20.61,1
+C015,Email | Monthly Newsletter,Email,Retention,2025-01-01,2025-12-31,2164.32,164269.0,4818.0,4584,316,31,13670.0,0.0293,0.45,0.0689,6.85,69.82,6.32,2
+C017,Email | Black Friday Email,Email,Conversion,2025-11-20,2025-12-02,431.47,32881.0,1098.0,1033,83,7,2492.0,0.0334,0.39,0.0803,5.2,61.64,5.78,3
+C001,Google Search | Brand Keywords,Google Search,Conversion,2025-01-01,2025-12-31,23567.06,166878.0,9533.0,8792,781,63,50179.0,0.0571,2.47,0.0888,30.18,374.08,2.13,4
+C018,Affiliate | Partner Program,Affiliate,Conversion,2025-01-01,2025-12-31,10850.99,960959.0,14464.0,12235,399,21,21018.0,0.0151,0.75,0.0326,27.2,516.71,1.94,5
+C011,LinkedIn Ads | Webinar Promotion,LinkedIn Ads,Lead Gen,2025-02-01,2025-10-31,14739.78,445297.0,2364.0,2141,97,9,19745.0,0.0053,6.24,0.0453,151.96,1637.75,1.34,6
+C010,LinkedIn Ads | Decision Makers - ABM,LinkedIn Ads,Conversion,2025-01-01,2025-12-31,28737.29,827630.0,5458.0,4590,283,27,35707.0,0.0066,5.27,0.0617,101.55,1064.34,1.24,7
+C003,Google Search | Generic - Analytics Tools,Google Search,Conversion,2025-01-01,2025-12-31,47700.58,338760.0,15928.0,14551,899,72,57630.0,0.047,2.99,0.0618,53.06,662.51,1.21,8
+C019,Affiliate | Review Sites,Affiliate,Conversion,2025-01-01,2025-12-31,8989.0,796629.0,12300.0,10370,379,16,10477.0,0.0154,0.73,0.0365,23.72,561.81,1.17,9
+C002,Google Search | Competitor Keywords,Google Search,Conversion,2025-01-01,2025-12-31,30123.31,213814.0,8188.0,7536,404,27,26088.0,0.0383,3.68,0.0536,74.56,1115.68,0.87,10
+C007,Meta Ads | Retargeting - Engaged,Meta Ads,Conversion,2025-01-01,2025-12-31,16516.63,1169036.0,16121.0,13282,507,21,12304.0,0.0138,1.02,0.0382,32.58,786.51,0.74,11
+C012,LinkedIn Ads | Thought Leadership,LinkedIn Ads,Awareness,2025-01-01,2025-12-31,13365.86,385740.0,2371.0,2069,80,9,7402.0,0.0061,5.64,0.0387,167.07,1485.1,0.55,12
+C004,Google Display | Prospecting - In-market,Google Display,Awareness,2025-01-01,2025-12-31,20051.0,6646594.0,31854.0,23093,230,5,6030.0,0.0048,0.63,0.01,87.18,4010.2,0.3,13
+C008,Meta Ads | Spring Launch,Meta Ads,Awareness,2025-03-01,2025-04-30,9360.23,663570.0,8116.0,6890,199,6,2758.0,0.0122,1.15,0.0289,47.04,1560.04,0.29,14
+C006,Meta Ads | Prospecting - Lookalike,Meta Ads,Awareness,2025-01-01,2025-12-31,40187.22,2845818.0,33220.0,27341,719,24,11094.0,0.0117,1.21,0.0263,55.89,1674.47,0.28,15
+C009,Meta Ads | Black Friday Offer,Meta Ads,Conversion,2025-11-15,2025-12-05,5428.77,385387.0,5449.0,4589,182,7,343.0,0.0141,1.0,0.0397,29.83,775.54,0.06,16
+C014,TikTok Ads | Product Demo Shorts,TikTok Ads,Awareness,2025-06-01,2025-12-31,7782.71,917012.0,7298.0,5689,66,3,343.0,0.008,1.07,0.0116,117.92,2594.24,0.04,17
+C005,Google Display | Retargeting - Site Visitors,Google Display,Conversion,2025-01-01,2025-12-31,12745.82,4221032.0,26889.0,19152,298,3,543.0,0.0064,0.47,0.0156,42.77,4248.61,0.04,18
+C013,TikTok Ads | Gen Z Founders,TikTok Ads,Awareness,2025-04-01,2025-12-31,12814.81,1513426.0,14002.0,10745,101,1,245.0,0.0093,0.92,0.0094,126.88,12814.81,0.02,19
