@@ -107,6 +107,8 @@ The models live in `src/`: `attribution.py` (11_ outputs), `lead_scoring.py` (12
 
 ## Running it
 
+You'll need Python 3.12 or newer (CI runs on 3.12).
+
 ```bash
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
