@@ -32,4 +32,4 @@ LEFT JOIN spend s USING (year_month, channel)
 LEFT JOIN leads l USING (year_month, channel)
 LEFT JOIN wins  w USING (year_month, channel)
 LEFT JOIN rev   r USING (year_month, channel)
-ORDER BY g.year_month, spend DESC;
+ORDER BY g.year_month, spend DESC, g.channel;

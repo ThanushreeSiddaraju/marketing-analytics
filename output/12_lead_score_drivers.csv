@@ -1,0 +1,8 @@
+feature,mean_abs_shap,share
+channel,0.3032,0.3324
+company_size,0.2658,0.2914
+landing_pageviews,0.196,0.2149
+offer_type,0.0611,0.0669
+region,0.0562,0.0616
+prior_visits,0.0234,0.0257
+device,0.0064,0.007

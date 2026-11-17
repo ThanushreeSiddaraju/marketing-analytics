@@ -1,0 +1,2 @@
+weeks,holdout_weeks,r2_in_sample,holdout_mape,residual_sd,true_noise_sd
+156,13,0.893,0.0253,8.09,9.0

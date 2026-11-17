@@ -1,13 +1,15 @@
-"""Build the DuckDB model, run every query in sql/analysis/, and write the results.
+"""Build the DuckDB model, run every query in sql/analysis/ and the models, and write the results.
 
 Outputs (output/):
   00_data_quality.csv         what the cleaning step fixed
   01_... .. 10_... .csv       one CSV per analysis query
+  11_... .. 14_... .csv       attribution models, lead scoring, MMM and budget split
   marketing_report.xlsx       all of the above, one sheet each
 
 Usage:
   python src/run_analysis.py                 # uses data/raw (run make_sample_data.py first)
   python src/run_analysis.py --raw my/exports --skip-build
+  python src/run_analysis.py --skip-models   # SQL only
 """
 from __future__ import annotations
 
@@ -17,6 +19,9 @@ from pathlib import Path
 import duckdb
 import pandas as pd
 
+import attribution
+import lead_scoring
+import mmm
 from build_model import build
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -37,6 +42,7 @@ def main() -> None:
     ap.add_argument("--db", type=Path, default=ROOT / "data" / "marketing.duckdb")
     ap.add_argument("--out", type=Path, default=ROOT / "output")
     ap.add_argument("--skip-build", action="store_true", help="reuse the existing DuckDB file")
+    ap.add_argument("--skip-models", action="store_true", help="only run the SQL")
     args = ap.parse_args()
     args.out.mkdir(parents=True, exist_ok=True)
 
@@ -44,6 +50,14 @@ def main() -> None:
     if not args.skip_build:
         results["00_data_quality"] = build(args.raw, args.db)
     results.update(run_queries(args.db))
+    if not args.skip_models:
+        att = attribution.compare(attribution.load_journeys(args.db))
+        results["11_attribution_models"] = att
+        results["11_attribution_comparison"] = attribution.summary_table(att)
+        results.update(lead_scoring.run(args.db))
+        m = mmm.run()
+        m.pop("_weekly").to_csv(args.out / "13_mmm_weekly_data.csv", index=False)
+        results.update(m)
 
     with pd.ExcelWriter(args.out / "marketing_report.xlsx") as xl:
         for name, df in results.items():

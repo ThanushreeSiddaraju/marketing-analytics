@@ -1,0 +1,16 @@
+channel,parameter,true,estimate,ci90_low,ci90_high,inside_interval
+Google Search,decay,0.2,0.152,0.1,0.216,True
+Google Search,half_sat,2600.0,2471.465,1462.087,3756.02,True
+Google Search,beta,210.0,202.922,187.234,232.676,True
+Meta Ads,decay,0.45,0.406,0.246,0.485,True
+Meta Ads,half_sat,2200.0,5188.967,1617.793,4988.404,True
+Meta Ads,beta,70.0,82.094,58.713,88.665,True
+LinkedIn Ads,decay,0.55,0.337,0.172,0.443,False
+LinkedIn Ads,half_sat,3800.0,1470.69,881.667,2560.185,False
+LinkedIn Ads,beta,95.0,84.801,61.341,108.288,True
+Google Display,decay,0.35,0.245,0.201,0.435,True
+Google Display,half_sat,500.0,594.624,533.378,831.837,False
+Google Display,beta,16.0,4.71,0.0,19.852,True
+TikTok Ads,decay,0.3,0.279,0.219,0.417,True
+TikTok Ads,half_sat,450.0,433.298,398.576,566.941,True
+TikTok Ads,beta,9.0,3.548,0.0,16.556,True

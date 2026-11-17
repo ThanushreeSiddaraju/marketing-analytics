@@ -1,0 +1,61 @@
+model,channel,customers,revenue,revenue_share
+first_touch,Affiliate,47.0,32354.0,0.062
+first_touch,Direct,82.0,66400.0,0.1272
+first_touch,Email,63.0,62698.0,0.1201
+first_touch,Google Display,51.0,42539.0,0.0815
+first_touch,Google Search,129.0,103800.0,0.1988
+first_touch,LinkedIn Ads,32.0,42530.0,0.0815
+first_touch,Meta Ads,89.0,75707.0,0.145
+first_touch,Organic Search,83.0,69205.0,0.1326
+first_touch,Referral,30.0,19540.0,0.0374
+first_touch,TikTok Ads,17.0,7241.0,0.0139
+last_touch,Affiliate,37.0,31495.0,0.0603
+last_touch,Direct,111.0,94152.0,0.1804
+last_touch,Email,92.0,90891.0,0.1741
+last_touch,Google Display,8.0,6573.0,0.0126
+last_touch,Google Search,162.0,133897.0,0.2565
+last_touch,LinkedIn Ads,45.0,62854.0,0.1204
+last_touch,Meta Ads,58.0,26499.0,0.0508
+last_touch,Organic Search,85.0,59044.0,0.1131
+last_touch,Referral,21.0,16021.0,0.0307
+last_touch,TikTok Ads,4.0,588.0,0.0011
+linear,Affiliate,43.4,34083.02,0.0653
+linear,Direct,91.78,75690.2,0.145
+linear,Email,75.41,73046.09,0.1399
+linear,Google Display,36.06,29304.55,0.0561
+linear,Google Search,140.49,113261.85,0.217
+linear,LinkedIn Ads,38.2,50551.5,0.0968
+linear,Meta Ads,74.61,54258.07,0.1039
+linear,Organic Search,83.81,65643.09,0.1257
+linear,Referral,25.06,17972.1,0.0344
+linear,TikTok Ads,14.19,8203.54,0.0157
+position_based,Affiliate,42.77,33093.59,0.0634
+position_based,Direct,94.54,78421.51,0.1502
+position_based,Email,76.34,75293.61,0.1442
+position_based,Google Display,31.95,26027.71,0.0499
+position_based,Google Search,143.46,116995.37,0.2241
+position_based,LinkedIn Ads,38.32,51826.32,0.0993
+position_based,Meta Ads,74.04,52015.48,0.0996
+position_based,Organic Search,84.14,64758.08,0.1241
+position_based,Referral,25.47,18054.5,0.0346
+position_based,TikTok Ads,11.98,5527.84,0.0106
+markov,Affiliate,39.8,29418.31,0.0564
+markov,Direct,97.5,81915.73,0.1569
+markov,Email,75.74,72622.27,0.1391
+markov,Google Display,29.42,24461.83,0.0469
+markov,Google Search,157.36,128749.74,0.2466
+markov,LinkedIn Ads,32.8,44535.91,0.0853
+markov,Meta Ads,76.3,54068.64,0.1036
+markov,Organic Search,89.86,68939.23,0.1321
+markov,Referral,17.51,13487.68,0.0258
+markov,TikTok Ads,6.69,3814.66,0.0073
+shapley,Affiliate,44.25,34831.74,0.0667
+shapley,Direct,92.44,76334.1,0.1462
+shapley,Email,76.17,74001.34,0.1418
+shapley,Google Display,35.67,29737.72,0.057
+shapley,Google Search,139.38,113391.14,0.2172
+shapley,LinkedIn Ads,38.78,51461.0,0.0986
+shapley,Meta Ads,72.88,52322.04,0.1002
+shapley,Organic Search,83.57,63048.32,0.1208
+shapley,Referral,25.44,18126.52,0.0347
+shapley,TikTok Ads,14.44,8760.1,0.0168

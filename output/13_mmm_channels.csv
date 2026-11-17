@@ -1,0 +1,6 @@
+channel,total_spend,signups_from_channel,true_signups_from_channel,cost_per_signup,true_cost_per_signup,marginal_cost_per_signup,marginal_ci90_low,marginal_ci90_high,true_marginal_cost_per_signup
+Google Search,277785.0,14146.0,14731.0,19.64,18.86,35.34,31.98,39.11,34.13
+Meta Ads,228905.0,3981.0,5768.0,57.5,39.68,81.8,69.99,104.81,84.66
+LinkedIn Ads,160156.0,6608.0,5443.0,24.24,29.42,48.48,40.48,67.45,46.12
+Google Display,72617.0,347.0,1387.0,209.49,52.36,395.9,95.52,10000.0,120.32
+TikTok Ads,51255.0,264.0,670.0,193.96,76.54,371.2,84.52,10000.0,146.32

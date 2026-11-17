@@ -1,0 +1,7 @@
+channel,current_weekly_spend,recommended_weekly_spend,change_pct,signups_now_model,signups_after_model,signups_now_true,signups_after_true
+Google Search,1781.0,2671.0,50.0,93.2,113.7,96.9,118.1
+Meta Ads,1467.0,773.0,-47.4,26.5,16.5,38.4,27.3
+LinkedIn Ads,1027.0,1228.0,19.6,43.5,47.3,35.6,39.7
+Google Display,465.0,233.0,-50.0,2.4,1.6,9.4,6.7
+TikTok Ads,329.0,164.0,-50.0,1.8,1.2,4.6,3.1
+Total,5069.0,5069.0,,167.4,180.3,184.9,194.9
