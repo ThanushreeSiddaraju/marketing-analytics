@@ -36,6 +36,47 @@ The cleaning step caught 403 duplicate ad rows, 15 negative spend values, 20 row
 
 All of this is from the generated data (seed 42), so the numbers are only as real as my assumptions. The SQL doesn't care where the data comes from, though. Real exports from Google Ads, Meta, GA4 and a CRM mapped to the same columns would work the same way.
 
+## Models
+
+### Attribution
+
+The rule-based models above all pick a winner by position in the journey. I also wrote two data-driven ones: a Markov chain (how much do conversions drop if a channel is taken out of every journey) and Shapley values (each channel's average extra contribution across every combination of channels). Both are in `src/attribution.py` and only take a few dozen lines each, so I didn't pull in a library.
+
+They mostly agree with each other, and both disagree with last touch in the same direction:
+
+| Channel | Last touch | Markov | Shapley |
+|---|---:|---:|---:|
+| Google Search | 25.7% | 24.7% | 21.7% |
+| Direct | 18.0% | 15.7% | 14.6% |
+| Email | 17.4% | 13.9% | 14.2% |
+| Organic Search | 11.3% | 13.2% | 12.1% |
+| Meta | 5.1% | 10.4% | 10.0% |
+| LinkedIn | 12.0% | 8.5% | 9.9% |
+| Affiliate | 6.0% | 5.6% | 6.7% |
+| Google Display | 1.3% | 4.7% | 5.7% |
+| Referral | 3.1% | 2.6% | 3.5% |
+| TikTok | 0.1% | 0.7% | 1.7% |
+
+Meta roughly doubles its share and Display goes from almost nothing to about 5%. Email and Direct lose a few points each, because they tend to be the last click of a journey something else started. With the extra credit Display brings in roughly $25-30k against $33k of spend, close to breaking even in the first year, so it's less of a waste than last touch made it look. TikTok is still nowhere near. Meta is less clear cut too, and cutting it hard would probably cost more than last touch suggests.
+
+### Lead scoring
+
+`src/lead_scoring.py` predicts whether a new lead will end up paying, using only what's known when they fill in the form: channel, company size, pages viewed, the ad's offer, region, device and how many times they'd visited before. I validated it month by month (train on everything before July, test on July, and so on to October) so it never sees the future.
+
+It's a modest model. AUC is 0.63, and plain logistic regression does just as well as XGBoost. That isn't surprising, since the only things in this data that actually drive conversion are channel, company size and engagement, and SHAP puts those three at the top with 84% of the weight. I tried industry, hour and weekday too and they made it slightly worse. It's still useful: the top 10% of scored leads convert at 15% against 7% overall, and the top 20% contain 39% of the people who went on to buy. If sales could only call back a fifth of new leads, that's the fifth to call.
+
+### Marketing mix model
+
+A single year of data isn't enough for an MMM, so `src/mmm.py` simulates three years of weekly spend and sign-ups for the five paid ad channels, with true effects I set in advance. Then it fits a model with carryover (adstock) and diminishing returns (a saturation curve) for each channel, plus trend and seasonality, and checks how close it gets to the truth. I fitted it with scipy and weak priors rather than a full Bayesian library, and used a block bootstrap for the uncertainty.
+
+On a 13-week holdout it's off by 2.5% on average. Google Search comes back almost exactly (maximum effect 203 sign-ups a week against a true 210), and Meta's maximum effect is close (82 against 70). LinkedIn's carryover is underestimated, and the two small channels are where it struggles: Display and TikTok only add a handful of sign-ups a week next to noise of about 9, so the model gives them less credit than they deserve and the baseline soaks up the rest. 12 of the 15 true parameters land inside the 90% intervals.
+
+What matters for budget decisions is the cost of the next sign-up at today's spend. The model has Search at $35, LinkedIn $48, Meta $82, and Display and TikTok somewhere around $370-400 (true values $120-146, but still the worst). The true marginal cost is inside the interval for all five channels.
+
+### Budget
+
+Keeping total spend the same and moving no channel more than 50% from where it is now, the optimiser moves money out of Meta, Display and TikTok and into Search and LinkedIn. The model says that's worth 7.7% more sign-ups a week. Scored against the true curves it's 5.4%. So the direction is right and the size is a bit optimistic, which is about what I'd expect to see with a real MMM too.
+
 ## How it's put together
 
 Raw CSVs go into DuckDB, get cleaned in `sql/model/01_staging.sql`, and end up as a small star schema in `sql/model/02_marts.sql`:
@@ -62,6 +103,8 @@ The questions are answered in `sql/analysis/`:
 | 09_creative_performance | Which offers, tones and formats get clicks |
 | 10_kpi_summary | Headline numbers |
 
+The models live in `src/`: `attribution.py` (11_ outputs), `lead_scoring.py` (12_), and `mmm.py` (13_ and 14_ for the budget split).
+
 ## Running it
 
 ```bash
@@ -73,8 +116,8 @@ python src/run_analysis.py
 python -m pytest -q tests
 ```
 
-Results go to `output/`, one CSV per query plus an Excel file with everything in it. The tests check things like the funnel never getting bigger, spend totals matching, and attribution credit adding up to one per lead.
+Results go to `output/`, one CSV per query or model output plus an Excel file with everything in it. The whole thing takes about 20 seconds; add `--skip-models` to only run the SQL. The tests check things like the funnel never getting bigger, spend totals matching, attribution credit adding up to one per lead, the Shapley code against small cases worked out by hand, the lead model not using anything from after the form was filled in, and the MMM getting the biggest channel's effect back within 15%.
 
 ## What's next
 
-I'm adding a modelling layer next: data-driven attribution (Markov chains and Shapley values), a lead scoring model, and a marketing mix model to see where extra spend stops paying off. After that I'll build a small team of LLM agents that check the data, answer questions in SQL and write up the findings, with a reviewer that re-runs every number before it's published. The end goal is a dashboard site for all of it. My notes on the plan and on getting real data are in [docs/](docs/).
+Next is a small team of LLM agents that check the data, answer questions in SQL and write up the findings, with a reviewer that re-runs every number before it's published. After that, a dashboard site for all of it. My notes on the plan and on getting real data are in [docs/](docs/).
