@@ -1,6 +1,6 @@
 # Plan
 
-Rough order I'm working in. The SQL, the first round of models and the agents are done.
+Rough order I'm working in. The SQL, the first round of models, the agents and the site are done.
 
 ## Modelling
 
@@ -32,7 +32,7 @@ Still to do: run the 32-question eval with a real key and write up the score, th
 
 ## Site
 
-A static site on GitHub Pages, rebuilt by GitHub Actions. Charts read precomputed JSON. If I add a "ask the data" box later it'll need a small serverless function to hold the API key.
+Done: a static page on GitHub Pages, rebuilt by GitHub Actions on every push. The charts are hand-written SVG reading one JSON file. If I add an "ask the data" box later it'll need a small serverless function to hold the API key, because a static page can't keep one secret.
 
 ## Also want to add
 

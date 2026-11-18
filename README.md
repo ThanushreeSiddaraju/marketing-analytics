@@ -1,5 +1,7 @@
 # Marketing Analytics
 
+The dashboard is at https://thanushreesiddaraju.github.io/marketing-analytics/
+
 I wanted a project that looks at marketing the way a growth team actually does: which channels bring in paying customers, where people drop off between seeing an ad and paying, and where the budget should go next month.
 
 There's no public dataset that covers ads, website visits, CRM stages and revenue for the same company, so I wrote a generator for one. It's a made-up B2B SaaS called Lumora with three plans ($49, $149 and $499 a month) and 19 campaigns across Google, Meta, LinkedIn, TikTok, email and affiliates for 2025. The channel numbers (CPMs, click rates, conversion rates, churn) are set to roughly what you'd see in the real world, and I put some messy data in on purpose so the cleaning step has something to do.
@@ -150,6 +152,15 @@ python evals/run_evals.py
 
 Results go to `output/`, one CSV per query or model output plus an Excel file with everything in it. The whole thing takes about 20 seconds; add `--skip-models` to only run the SQL. The tests check things like the funnel never getting bigger, spend totals matching, attribution credit adding up to one per lead, the Shapley code against small cases worked out by hand, the lead model not using anything from after the form was filled in, and the MMM getting the biggest channel's effect back within 15%.
 
+## The site
+
+`site/` is a plain static page: HTML, CSS and one JavaScript file that draws the charts as SVG, with no libraries. `src/build_site.py` bundles the outputs into `site/data/site.json`, and a GitHub Actions workflow regenerates the data, reruns everything and publishes the page on every push. To look at it locally:
+
+```bash
+python src/build_site.py
+python -m http.server 8000 --directory site
+```
+
 ## What's next
 
-Running the eval and putting the score here, then a dashboard site for all of it on GitHub Pages. My notes on the plan and on getting real data are in [docs/](docs/).
+Running the agent eval and putting the score here. My notes on the plan and on getting real data are in [docs/](docs/).
