@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lumora Marketing Analytics</title>
+  <meta name="description" content="Campaign performance, funnel, attribution, lead scoring and a marketing mix model for a made-up B2B SaaS, built with DuckDB, SQL and Python.">
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect x='2' y='8' width='3' height='6' rx='1' fill='%232a78d6'/%3E%3Crect x='6.5' y='4' width='3' height='10' rx='1' fill='%232a78d6'/%3E%3Crect x='11' y='2' width='3' height='12' rx='1' fill='%232a78d6'/%3E%3C/svg%3E">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <p class="eyebrow">Marketing analytics</p>
+    <h1>Where Lumora's ad money went in 2025, and where it should go next</h1>
+    <p class="lede">Lumora is a made-up B2B SaaS with three plans and 19 campaigns across Google, Meta, LinkedIn, TikTok, email and affiliates. I generated a year of ads, website visits, CRM stages and invoices for it, cleaned it in DuckDB, and worked through it the way a growth team would. All numbers below come from that generated data.</p>
+    <nav class="toc" aria-label="Sections">
+      <a href="#channels">Channels</a>
+      <a href="#funnel">Funnel</a>
+      <a href="#trend">By month</a>
+      <a href="#attribution">Attribution</a>
+      <a href="#scoring">Lead scoring</a>
+      <a href="#mmm">Mix model</a>
+      <a href="#quality">Data quality</a>
+      <a href="#agents">Agents</a>
+      <a href="https://github.com/ThanushreeSiddaraju/marketing-analytics">Code on GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="kpis" id="kpis" aria-label="Headline numbers"></section>
+
+  <section id="channels">
+    <h2>Cost per customer by channel</h2>
+    <p>Email is cheap because the list already exists. Of the paid channels, Google Search is the most efficient. Display and TikTok took 17% of the budget and brought in 12 of 623 customers, which makes them the easiest money to move. LinkedIn costs twice as much per customer as Search, but those customers pick bigger plans and churn at about half the rate, so its lifetime value to cost ratio is the best of any paid channel.</p>
+    <figure class="card">
+      <figcaption>Ad spend per paying customer, last-touch attribution</figcaption>
+      <div class="chart" id="chart-cac"></div>
+      <details><summary>Show the channel table</summary><div class="table-wrap" id="table-channels"></div></details>
+    </figure>
+  </section>
+
+  <section id="funnel">
+    <h2>The funnel</h2>
+    <p>Most people never click, which is normal for ads, and only a few percent of visits turn into leads. Once someone is a lead, the biggest drop is the last step: only about a quarter of sales-qualified leads end up paying. That's a sales and pricing question more than a marketing one.</p>
+    <figure class="card">
+      <figcaption>Share of each stage that makes it to the next</figcaption>
+      <div class="chart" id="chart-funnel"></div>
+      <details><summary>Show the funnel table</summary><div class="table-wrap" id="table-funnel"></div></details>
+    </figure>
+  </section>
+
+  <section id="trend">
+    <h2>Month by month</h2>
+    <p>Subscriptions pay monthly, so revenue keeps climbing as customers stack up, while spend stays roughly flat apart from the spring launch and Black Friday. Revenue passed monthly ad spend in April and was more than twice it by December.</p>
+    <figure class="card">
+      <figcaption>Ad spend and revenue collected per month</figcaption>
+      <div class="legend" id="legend-trend"></div>
+      <div class="chart" id="chart-trend"></div>
+      <details><summary>Show the monthly table</summary><div class="table-wrap" id="table-trend"></div></details>
+    </figure>
+    <div class="two">
+      <figure class="card">
+        <figcaption>Click-through rate by ad offer</figcaption>
+        <div class="chart" id="chart-offers"></div>
+        <details><summary>Show table</summary><div class="table-wrap" id="table-offers"></div></details>
+      </figure>
+      <figure class="card">
+        <figcaption>Ad spend per paying customer by device</figcaption>
+        <div class="chart" id="chart-devices"></div>
+        <details><summary>Show table</summary><div class="table-wrap" id="table-devices"></div></details>
+      </figure>
+    </div>
+    <p>Free-trial ads get the most clicks and convert best once people land; ebooks do worst. Mobile clicks are cheap but convert at about half the desktop rate, so a mobile customer costs nearly twice as much. The mobile sign-up form is the first thing I'd look at.</p>
+  </section>
+
+  <section id="attribution">
+    <h2>Who gets credit</h2>
+    <p>Last touch gives all the credit to the final click before someone signs up. The Markov chain and Shapley models look at whole journeys instead. They agree with each other closely, and both move credit towards Meta and Display, which tend to start journeys that Search, email and direct visits finish. Display still doesn't pay for itself, but it's closer to breaking even than last touch makes it look.</p>
+    <figure class="card">
+      <figcaption>Share of customer revenue credited to each channel</figcaption>
+      <div class="legend" id="legend-att"></div>
+      <div class="chart" id="chart-att"></div>
+      <details><summary>Show the attribution table</summary><div class="table-wrap" id="table-att"></div></details>
+    </figure>
+  </section>
+
+  <section id="scoring">
+    <h2>Which new leads will buy</h2>
+    <p id="scoring-text"></p>
+    <div class="two">
+      <figure class="card">
+        <figcaption>Conversion rate by score decile, compared with the average</figcaption>
+        <div class="chart" id="chart-deciles"></div>
+        <details><summary>Show table</summary><div class="table-wrap" id="table-deciles"></div></details>
+      </figure>
+      <figure class="card">
+        <figcaption>What drives the score (share of mean |SHAP|)</figcaption>
+        <div class="chart" id="chart-drivers"></div>
+        <details><summary>Show table</summary><div class="table-wrap" id="table-drivers"></div></details>
+      </figure>
+    </div>
+  </section>
+
+  <section id="mmm">
+    <h2>Where extra spend stops paying off</h2>
+    <p id="mmm-text"></p>
+    <figure class="card">
+      <figcaption>Weekly sign-ups at each level of steady weekly spend. The dot is where each channel runs now.</figcaption>
+      <div class="legend" id="legend-curves"></div>
+      <div class="multiples" id="chart-curves"></div>
+      <details><summary>Show parameter recovery</summary><div class="table-wrap" id="table-recovery"></div></details>
+    </figure>
+    <figure class="card">
+      <figcaption>Weekly budget now and after reallocating, same total</figcaption>
+      <div class="legend" id="legend-budget"></div>
+      <div class="chart" id="chart-budget"></div>
+      <details><summary>Show the budget table</summary><div class="table-wrap" id="table-budget"></div></details>
+    </figure>
+    <p id="budget-text"></p>
+  </section>
+
+  <section id="quality">
+    <h2>What the cleaning step fixed</h2>
+    <p>I put problems into the raw data on purpose, the kind that turn up in real exports, and the staging SQL fixes them. The tests check that none of them make it into the final tables.</p>
+    <div class="card"><div class="table-wrap" id="table-quality"></div></div>
+  </section>
+
+  <section id="agents">
+    <h2>Agents</h2>
+    <p>There are also four LLM agents built on the Anthropic SDK: an analyst that answers questions by writing SQL, a reviewer that checks the SQL answers the question that was asked, a data quality agent that reads the raw tables, and a writer that turns checked answers into a short brief.</p>
+    <p>None of their numbers are taken on trust. The SQL tool only runs a single read-only SELECT, checked by a parser and again by DuckDB's own lockdown. Every number an agent states has to cite the query it came from, and code re-runs that query to make sure the number is really there. The writer only sees answers that passed, and every number in its text is matched back to a checked value. A 32-question eval with known answers measures how often the analyst gets it right. The details are in the <a href="https://github.com/ThanushreeSiddaraju/marketing-analytics#agents">README</a>.</p>
+  </section>
+</main>
+
+<footer class="wrap foot">
+  <p>Built with DuckDB, SQL, pandas, scikit-learn, XGBoost, SHAP and scipy. Rebuilt from scratch by GitHub Actions on every push. <span id="built"></span></p>
+  <p><a href="https://github.com/ThanushreeSiddaraju/marketing-analytics">Source code</a> · Thanushree S</p>
+</footer>
+
+<div class="tip" id="tip" role="status" aria-live="polite" hidden></div>
+<script src="app.js"></script>
+</body>
+</html>

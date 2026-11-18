@@ -7,3 +7,5 @@ __pycache__/
 data/
 # secrets
 .env
+# built by src/build_site.py (CI does this on every push)
+site/data/
