@@ -77,6 +77,26 @@ What matters for budget decisions is the cost of the next sign-up at today's spe
 
 Keeping total spend the same and moving no channel more than 50% from where it is now, the optimiser moves money out of Meta, Display and TikTok and into Search and LinkedIn. The model says that's worth 7.7% more sign-ups a week. Scored against the true curves it's 5.4%. So the direction is right and the size is a bit optimistic, which is about what I'd expect to see with a real MMM too.
 
+## Agents
+
+`src/agents/` has four LLM agents built on the Anthropic SDK, with no agent framework. They work on the same DuckDB database as everything else.
+
+- The analyst answers a question in plain English by writing SQL. Its answer comes back as JSON where every number is a claim pointing at the query it came from, plus the column and row.
+- The reviewer reads the question, the answer and the SQL behind it, and decides whether the query actually answers what was asked. It catches things like counting last touch when the question was about first touch.
+- The data quality agent goes through the raw tables as they came in, before cleaning, and reports problems with row counts.
+- The writer turns checked answers into a short brief.
+
+What I cared about most was not letting a made-up number through. So none of the agents' numbers are trusted as written:
+
+- The SQL tool only runs a single SELECT. sqlglot parses it first and rejects anything that writes, reads files, attaches databases or touches settings, and only known tables are allowed. Underneath that, DuckDB is opened read-only with external access off and its configuration locked, so a query that got past the parser still couldn't do anything. There's also a row cap and a 10 second timeout.
+- Every query that runs gets an id. After the analyst answers, code re-runs the SQL for each claim and looks the number up in the fresh result. If a number doesn't match (allowing for rounding, or a share written as a percentage), or cites a query that never ran, the analyst gets the problems back and one more try.
+- The data quality agent's row counts go through the same check.
+- The writer only sees answers that passed both the code check and the reviewer. Afterwards every number in its text is pulled out and matched against the checked values, so it can't slip in a total it worked out itself.
+
+`evals/golden.jsonl` has 32 questions, from "how much did we spend" to first-touch revenue and campaign-level cost per lead, each with a SQL query that gives the right answer. `evals/run_evals.py` runs the analyst on all of them and reports how many it gets right, plus how many passed every check but were still wrong. That second number is the one that matters, because those are the wrong answers someone would actually see. The eval needs an API key and costs a little to run, so the results aren't in the repo yet.
+
+The tests in `tests/test_agents.py` don't call the API. A fake client plays back scripted model turns, which is enough to test the parts the safety depends on: the SQL guard (including going straight at the database connection), wrong numbers being caught and sent back, the reviewer rejecting a right number from the wrong query, and the writer being made to remove a number it invented.
+
 ## How it's put together
 
 Raw CSVs go into DuckDB, get cleaned in `sql/model/01_staging.sql`, and end up as a small star schema in `sql/model/02_marts.sql`:
@@ -118,8 +138,18 @@ python src/run_analysis.py
 python -m pytest -q tests
 ```
 
+The agents need an Anthropic API key:
+
+```bash
+export ANTHROPIC_API_KEY=...
+python src/agent_cli.py ask "Which channel had the lowest cost per customer?"
+python src/agent_cli.py quality
+python src/agent_cli.py brief
+python evals/run_evals.py
+```
+
 Results go to `output/`, one CSV per query or model output plus an Excel file with everything in it. The whole thing takes about 20 seconds; add `--skip-models` to only run the SQL. The tests check things like the funnel never getting bigger, spend totals matching, attribution credit adding up to one per lead, the Shapley code against small cases worked out by hand, the lead model not using anything from after the form was filled in, and the MMM getting the biggest channel's effect back within 15%.
 
 ## What's next
 
-Next is a small team of LLM agents that check the data, answer questions in SQL and write up the findings, with a reviewer that re-runs every number before it's published. After that, a dashboard site for all of it. My notes on the plan and on getting real data are in [docs/](docs/).
+Running the eval and putting the score here, then a dashboard site for all of it on GitHub Pages. My notes on the plan and on getting real data are in [docs/](docs/).

@@ -1,6 +1,6 @@
 # Plan
 
-Rough order I'm working in. The SQL part and the first round of models are done.
+Rough order I'm working in. The SQL, the first round of models and the agents are done.
 
 ## Modelling
 
@@ -19,14 +19,16 @@ Still to do:
 
 ## Agents
 
-Four to start, written against the Anthropic SDK directly, without a framework:
+Built, in src/agents/, on the Anthropic SDK directly without a framework:
 
-- data quality: looks at the raw tables and explains what's wrong
-- analyst: answers questions by writing SQL against a read-only copy of the database
-- reviewer: re-runs the query behind every number the other agents state and rejects anything that doesn't match
-- writer: turns the checked findings into short summaries for the site
+- data quality: looks at the raw tables and reports what's wrong, with row counts that get checked
+- analyst: answers questions by writing SQL against a locked-down read-only connection
+- reviewer: checks that the SQL answers the question that was asked
+- writer: turns checked answers into a short brief, and its numbers get traced back too
 
-The SQL tool only allows a single SELECT, with a row limit and a timeout, and external access is turned off in DuckDB. I'll keep a set of around 40 questions with known answers to measure how often the analyst gets them right.
+Every number cites a query id and is re-checked in code rather than by another model. The SQL tool only allows a single SELECT, with a row limit and a timeout, and external access is off in DuckDB as well.
+
+Still to do: run the 32-question eval with a real key and write up the score, then score the data quality agent on how many of the planted problems it finds with the right counts.
 
 ## Site
 
