@@ -15,6 +15,7 @@
     <h1>Where Lumora's ad money went in 2025, and where it should go next</h1>
     <p class="lede">Lumora is a made-up B2B SaaS with three plans and 19 campaigns across Google, Meta, LinkedIn, TikTok, email and affiliates. I generated a year of ads, website visits, CRM stages and invoices for it, cleaned it in DuckDB, and worked through it the way a growth team would. All numbers below come from that generated data, except one section near the end that analyses a real email experiment.</p>
     <nav class="toc" aria-label="Sections">
+      <a href="#how">How it's built</a>
       <a href="#channels">Channels</a>
       <a href="#funnel">Funnel</a>
       <a href="#trend">By month</a>
@@ -31,6 +32,59 @@
 
 <main class="wrap">
   <section class="kpis" id="kpis" aria-label="Headline numbers"></section>
+
+  <section id="how">
+    <h2>What went into this</h2>
+    <p>I built this end to end, from generating and cleaning the data to the models, the agents and this page. Each part below links to its code.</p>
+    <div class="skills">
+      <article class="skill">
+        <h3>SQL and data modelling</h3>
+        <p>Raw exports go into DuckDB and come out as a star schema: five fact tables and four dimensions. The staging SQL deduplicates with <code>QUALIFY ROW_NUMBER()</code>, maps messy channel names, and fixes impossible values. The ten analysis queries use window functions, <code>UNPIVOT</code>, <code>FILTER</code> and <code>LAG</code> to work out funnel drop-off.</p>
+        <a href="https://github.com/ThanushreeSiddaraju/marketing-analytics/tree/main/sql">sql/</a>
+      </article>
+      <article class="skill">
+        <h3>Marketing analytics</h3>
+        <p>CAC, ROAS, LTV to CAC, payback period, churn, funnel conversion, creative and device performance, and four rule-based attribution models. Each one answers a question a growth team actually asks, like where the next dollar should go or which step loses the most people.</p>
+        <a href="https://github.com/ThanushreeSiddaraju/marketing-analytics/tree/main/sql/analysis">sql/analysis/</a>
+      </article>
+      <article class="skill">
+        <h3>Attribution modelling</h3>
+        <p>Markov chain removal effects and exact Shapley values, written from scratch rather than with a library. They're tested against small cases worked out by hand and against the SQL rule-based numbers, which they match exactly.</p>
+        <a href="https://github.com/ThanushreeSiddaraju/marketing-analytics/blob/main/src/attribution.py">src/attribution.py</a>
+      </article>
+      <article class="skill">
+        <h3>Machine learning</h3>
+        <p>Lead scoring with XGBoost and logistic regression, using only what's known when the form is filled in so nothing leaks from the future. It's validated month by month and explained with SHAP, with calibration and lift checks. When the simple model did as well as the complex one, I said so.</p>
+        <a href="https://github.com/ThanushreeSiddaraju/marketing-analytics/blob/main/src/lead_scoring.py">src/lead_scoring.py</a>
+      </article>
+      <article class="skill">
+        <h3>Mix modelling and optimisation</h3>
+        <p>Adstock and saturation curves fitted with weak priors, plus a block bootstrap for uncertainty. I checked parameter recovery against a simulation where the true effects are known. A constrained budget optimiser runs on top, and its promise is scored against the true curves too.</p>
+        <a href="https://github.com/ThanushreeSiddaraju/marketing-analytics/blob/main/src/mmm.py">src/mmm.py</a>
+      </article>
+      <article class="skill">
+        <h3>Experiments and statistics</h3>
+        <p>A real randomised test with 64,000 customers. The analysis covers a sample ratio check, balance checks, Welch intervals, a Holm correction, CUPED, power and sample size, effects by customer group, and a targeting rule tested on held-out customers.</p>
+        <a href="https://github.com/ThanushreeSiddaraju/marketing-analytics/blob/main/src/hillstrom.py">src/hillstrom.py</a>
+      </article>
+      <article class="skill">
+        <h3>LLM agents</h3>
+        <p>Four agents on the Anthropic SDK using tool use and structured outputs. SQL access is locked down twice, by a parser and by DuckDB itself. Every number an agent states cites a query and is re-checked in code before anyone sees it. A reviewer agent and a 32-question eval with known answers round it off.</p>
+        <a href="https://github.com/ThanushreeSiddaraju/marketing-analytics/tree/main/src/agents">src/agents/</a>
+      </article>
+      <article class="skill">
+        <h3>Engineering</h3>
+        <p>A reproducible data generator with problems planted on purpose, 54 pytest tests, and GitHub Actions that rebuild the data, rerun every model and publish this site on every push. The real dataset downloads with a checksum check and is cached in CI.</p>
+        <a href="https://github.com/ThanushreeSiddaraju/marketing-analytics/tree/main/tests">tests/</a>
+      </article>
+      <article class="skill">
+        <h3>Data visualisation</h3>
+        <p>Every chart on this page is hand-written SVG with no chart library. The palette is checked for colour-blind readers, there are proper light and dark modes, every chart has hover tooltips and a table view, and the layout works on a phone.</p>
+        <a href="https://github.com/ThanushreeSiddaraju/marketing-analytics/blob/main/site/app.js">site/app.js</a>
+      </article>
+    </div>
+    <p class="stack">Python, SQL, DuckDB, pandas, NumPy, SciPy, scikit-learn, XGBoost, SHAP, sqlglot, the Anthropic SDK, pytest, GitHub Actions, GitHub Pages, and plain HTML, CSS and SVG.</p>
+  </section>
 
   <section id="channels">
     <h2>Cost per customer by channel</h2>

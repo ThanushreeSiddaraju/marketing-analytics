@@ -123,6 +123,13 @@ th { font-weight: 600; color: var(--ink-2); }
 .tip .row { display: flex; align-items: center; gap: 6px; }
 .tip .row span:last-child { margin-left: auto; padding-left: 12px; font-variant-numeric: tabular-nums; }
 
+.skills { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 12px; margin: 16px 0; }
+.skill { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; }
+.skill h3 { font-size: 15px; font-weight: 650; margin: 0 0 6px; }
+.skill p { font-size: 14px; line-height: 1.55; color: var(--ink-2); margin: 0 0 10px; flex: 1; }
+.skill a { font-size: 13px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+.skill code { font-size: 12.5px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+.stack { font-size: 14px; color: var(--muted); }
 .foot { padding: 24px 16px 48px; border-top: 1px solid var(--grid); font-size: 14px; color: var(--muted); }
 .foot p { margin: 4px 0; }
 

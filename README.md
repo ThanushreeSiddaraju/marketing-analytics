@@ -6,7 +6,21 @@ I wanted a project that looks at marketing the way a growth team actually does: 
 
 There's no public dataset that covers ads, website visits, CRM stages and revenue for the same company, so I wrote a generator for one. It's a made-up B2B SaaS called Lumora with three plans ($49, $149 and $499 a month) and 19 campaigns across Google, Meta, LinkedIn, TikTok, email and affiliates for 2025. The channel numbers (CPMs, click rates, conversion rates, churn) are set to roughly what you'd see in the real world, and I put some messy data in on purpose so the cleaning step has something to do.
 
-Everything else is DuckDB and SQL, with a bit of Python to run it.
+The data work is DuckDB and SQL, and the modelling, agents and site are in Python and plain JavaScript.
+
+## What it covers
+
+I built the whole thing myself, from the data to the page it's published on:
+
+- SQL and data modelling: a DuckDB star schema with five fact tables and four dimensions, cleaning in staging SQL (`QUALIFY ROW_NUMBER()` dedupes, channel mapping, impossible values), and ten analysis queries using window functions, `UNPIVOT`, `FILTER` and `LAG`.
+- Marketing analytics: CAC, ROAS, LTV to CAC, payback, churn, funnel conversion, creative and device performance, and first-touch, last-touch, linear and position-based attribution.
+- Attribution modelling: Markov chain removal effects and exact Shapley values written from scratch, tested against hand-worked cases and against the SQL.
+- Machine learning: lead scoring with XGBoost and logistic regression, no leakage, month-by-month validation, SHAP, calibration and lift.
+- Mix modelling and optimisation: adstock and saturation curves with weak priors, bootstrap intervals, parameter recovery against known truth, and a constrained budget optimiser.
+- Experiments and statistics: a real 64,000-customer randomised email test with sample ratio and balance checks, Welch intervals, Holm correction, CUPED, power analysis, segment effects and a held-out targeting check.
+- LLM agents: four agents on the Anthropic SDK with tool use and structured outputs, two layers of SQL lockdown, every number re-checked in code, a reviewer agent and a 32-question eval.
+- Engineering: a reproducible generator with planted data problems, 54 pytest tests, and GitHub Actions that rebuild the data, rerun every model and publish the site on every push.
+- Data visualisation: hand-written SVG charts with no chart library, a colour-blind-checked palette, light and dark modes, tooltips and a table behind every chart.
 
 ## What I found
 
