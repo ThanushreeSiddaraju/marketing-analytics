@@ -1,6 +1,6 @@
 # Plan
 
-Rough order I'm working in. The SQL, the first round of models, the agents and the site are done.
+Rough order I'm working in. The SQL, the first round of models, the agents, the site and one real dataset are done.
 
 ## Modelling
 
@@ -15,7 +15,7 @@ Still to do:
 
 - A proper Bayesian version of the MMM (PyMC-Marketing) to compare against, since my bootstrap intervals are a bit too narrow.
 - Forecast and anomaly flags on daily KPIs with statsforecast, plus a simple median/MAD check as a sanity baseline.
-- An A/B test write-up (power, sample ratio check, CUPED) and a geo-lift test with CausalPy.
+- A geo-lift test with CausalPy. (The A/B test part is done, on the real Hillstrom data: sample ratio check, balance, Holm-corrected effects, CUPED, power and a held-out targeting check.)
 
 ## Agents
 
@@ -38,4 +38,4 @@ Done: a static page on GitHub Pages, rebuilt by GitHub Actions on every push. Th
 
 - dbt models with tests
 - schema checks at the point raw data comes in
-- one real dataset alongside the generated one (see data-sources.md)
+- a second real dataset with ads and sessions in it, probably the GA4 sample (the Hillstrom email test is in, see data-sources.md)

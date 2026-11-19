@@ -79,6 +79,26 @@ What matters for budget decisions is the cost of the next sign-up at today's spe
 
 Keeping total spend the same and moving no channel more than 50% from where it is now, the optimiser moves money out of Meta, Display and TikTok and into Search and LinkedIn. The model says that's worth 7.7% more sign-ups a week. Scored against the true curves it's 5.4%. So the direction is right and the size is a bit optimistic, which is about what I'd expect to see with a real MMM too.
 
+## Real data: the Hillstrom email test
+
+Everything above runs on generated data, so I wanted at least one real campaign in here too. In 2008 Kevin Hillstrom published a test from an online retailer: 64,000 customers who had bought in the last year were randomly sent an email about men's merchandise, an email about women's merchandise, or nothing, and their site visits, purchases and spend were tracked for two weeks afterwards. `src/hillstrom.py` downloads the file from his site on the first run, checks it against a fixed checksum, loads it with `sql/real/01_hillstrom.sql`, and writes the `15_hillstrom_*` outputs.
+
+Before looking at any results I checked the split. The three groups have 21,306, 21,307 and 21,387 customers (sample ratio test p = 0.90), and past spend, recency, new customers and purchase history all line up across them to within 0.01 standard deviations. So the comparison is fair.
+
+Both emails worked, and all six effects survive a Holm correction:
+
+| | No email | Men's email | Women's email |
+|---|---:|---:|---:|
+| Visited the site | 10.6% | 18.3% | 15.1% |
+| Bought something | 0.57% | 1.25% | 0.88% |
+| Spend per customer | $0.65 | $1.42 | $1.08 |
+
+The men's email more than doubled purchases. The more useful finding is who each email works for. The women's email barely moved people who had only ever bought men's items (1.1 extra visits per 100, against about 7 for everyone else), while the men's email worked on all groups, including women-only buyers. Because of that, a rule that picks the email based on past purchases didn't beat simply sending everyone the men's email when I fitted it on half the customers and scored it on the other half.
+
+Two things didn't help, and I've left them in because they're worth knowing. CUPED, which uses pre-test spend to cut noise, removed almost nothing (0.04% of the variance), because last year's spend barely predicts spend in a two-week window. And purchases are rare: with about 21,000 customers per group the test could only reliably detect a purchase-rate change of about 36% in relative terms. It was big enough for these effects, but a subtler email would have needed a much larger test.
+
+The tests check the stats helpers against scipy and against data with a known answer, check that the sample ratio test catches a broken split, and check that the real results match the numbers usually reported for this dataset.
+
 ## Agents
 
 `src/agents/` has four LLM agents built on the Anthropic SDK, with no agent framework. They work on the same DuckDB database as everything else.
@@ -125,7 +145,7 @@ The questions are answered in `sql/analysis/`:
 | 09_creative_performance | Which offers, tones and formats get clicks |
 | 10_kpi_summary | Headline numbers |
 
-The models live in `src/`: `attribution.py` (11_ outputs), `lead_scoring.py` (12_), and `mmm.py` (13_ and 14_ for the budget split).
+The models live in `src/`: `attribution.py` (11_ outputs), `lead_scoring.py` (12_), `mmm.py` (13_ and 14_ for the budget split) and `hillstrom.py` (15_, the real email test).
 
 ## Running it
 
@@ -150,7 +170,7 @@ python src/agent_cli.py brief
 python evals/run_evals.py
 ```
 
-Results go to `output/`, one CSV per query or model output plus an Excel file with everything in it. The whole thing takes about 20 seconds; add `--skip-models` to only run the SQL. The tests check things like the funnel never getting bigger, spend totals matching, attribution credit adding up to one per lead, the Shapley code against small cases worked out by hand, the lead model not using anything from after the form was filled in, and the MMM getting the biggest channel's effect back within 15%.
+Results go to `output/`, one CSV per query or model output plus an Excel file with everything in it. The whole thing takes about 20 seconds after the first run, which also downloads the 4 MB Hillstrom file. Add `--skip-models` to only run the SQL, or `--skip-real` to leave out the real dataset. The tests check things like the funnel never getting bigger, spend totals matching, attribution credit adding up to one per lead, the Shapley code against small cases worked out by hand, the lead model not using anything from after the form was filled in, and the MMM getting the biggest channel's effect back within 15%.
 
 ## The site
 

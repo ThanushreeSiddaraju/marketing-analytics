@@ -12,6 +12,7 @@ Google Ads, Meta, LinkedIn and TikTok all have APIs, but they only return real n
 - **Criteo attribution dataset**: 16.5M real display ad impressions with clicks, cost and conversions. Good for testing attribution. The licence is non-commercial and share-alike.
 - **Meridian and Robyn demo data**: simulated weekly spend by channel, the usual benchmark for marketing mix models.
 - **UCI Bank Marketing**: 45k campaign contacts with outcomes, fine for lead scoring practice.
+- **Hillstrom email test** (MineThatData, 2008): 64,000 customers randomly sent a men's email, a women's email or nothing, with visits, purchases and spend. A real randomised campaign, small enough to download in CI, and a direct download with no login. This is the one I used.
 
 ## CRM
 
@@ -33,4 +34,4 @@ Competitor pricing pages are fine to fetch occasionally if robots.txt allows it.
 
 ## What I'll probably do
 
-Keep the generated data as the main set, since it's the only option with ads, visits, CRM stages and revenue all linked. Then add the GA4 sample as a real-data comparison, a HubSpot pipeline, and competitor ads from the ad library APIs.
+Keep the generated data as the main set, since it's the only option with ads, visits, CRM stages and revenue all linked. I started the real-data side with the Hillstrom email test, because the GA4 sample needs a Google Cloud login, which doesn't work well in CI. The GA4 sample, a HubSpot pipeline and competitor ads from the ad library APIs are still on the list.
