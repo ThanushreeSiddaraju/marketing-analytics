@@ -13,7 +13,7 @@
   <div class="wrap">
     <p class="eyebrow">Marketing analytics</p>
     <h1>Where Lumora's ad money went in 2025, and where it should go next</h1>
-    <p class="lede">Lumora is a made-up B2B SaaS with three plans and 19 campaigns across Google, Meta, LinkedIn, TikTok, email and affiliates. I generated a year of ads, website visits, CRM stages and invoices for it, cleaned it in DuckDB, and worked through it the way a growth team would. All numbers below come from that generated data.</p>
+    <p class="lede">Lumora is a made-up B2B SaaS with three plans and 19 campaigns across Google, Meta, LinkedIn, TikTok, email and affiliates. I generated a year of ads, website visits, CRM stages and invoices for it, cleaned it in DuckDB, and worked through it the way a growth team would. All numbers below come from that generated data, except one section near the end that analyses a real email experiment.</p>
     <nav class="toc" aria-label="Sections">
       <a href="#channels">Channels</a>
       <a href="#funnel">Funnel</a>
@@ -21,6 +21,7 @@
       <a href="#attribution">Attribution</a>
       <a href="#scoring">Lead scoring</a>
       <a href="#mmm">Mix model</a>
+      <a href="#real">Real experiment</a>
       <a href="#quality">Data quality</a>
       <a href="#agents">Agents</a>
       <a href="https://github.com/ThanushreeSiddaraju/marketing-analytics">Code on GitHub</a>
@@ -119,6 +120,30 @@
       <details><summary>Show the budget table</summary><div class="table-wrap" id="table-budget"></div></details>
     </figure>
     <p id="budget-text"></p>
+  </section>
+
+  <section id="real" hidden>
+    <h2>A real campaign: the Hillstrom email test</h2>
+    <p>Everything above uses generated data, so I also wanted something real. In 2008 Kevin Hillstrom published a test from an online retailer: 64,000 recent customers were randomly sent an email about men's merchandise, an email about women's merchandise, or nothing, and their visits, purchases and spend were tracked for the next two weeks. Because the groups were picked at random, the gap between each email group and the no-email group is what the email caused.</p>
+    <p id="real-checks"></p>
+    <div class="legend" id="legend-real"></div>
+    <div class="multiples three" id="chart-real"></div>
+    <p id="real-effects"></p>
+    <figure class="card">
+      <figcaption>Extra visits per 100 customers, by what they had bought before (with 95% intervals)</figcaption>
+      <div class="legend" id="legend-real-seg"></div>
+      <div class="chart" id="chart-real-seg"></div>
+      <details><summary>Show table</summary><div class="table-wrap" id="table-real-seg"></div></details>
+    </figure>
+    <p id="real-segments"></p>
+    <div class="card">
+      <details open><summary>Effects table</summary><div class="table-wrap" id="table-real-effects"></div></details>
+      <details><summary>Randomisation checks</summary><div class="table-wrap" id="table-real-balance"></div></details>
+      <details><summary>CUPED</summary><div class="table-wrap" id="table-real-cuped"></div></details>
+      <details><summary>Targeting rules, scored on held-out customers</summary><div class="table-wrap" id="table-real-targeting"></div></details>
+      <details><summary>Power and sample size</summary><div class="table-wrap" id="table-real-power"></div></details>
+    </div>
+    <p id="real-power"></p>
   </section>
 
   <section id="quality">

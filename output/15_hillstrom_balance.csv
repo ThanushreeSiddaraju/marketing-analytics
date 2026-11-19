@@ -1,0 +1,15 @@
+check,group,value,note
+customers,control,21306.0,
+customers,mens_email,21307.0,
+customers,womens_email,21387.0,
+sample ratio test (equal thirds),all,0.9037,chi-square 0.20; a p-value under 0.001 would mean the split is broken
+balance: months since last purchase,mens_email,0.0068,standardised difference vs control; under 0.1 is balanced
+balance: months since last purchase,womens_email,0.0052,standardised difference vs control; under 0.1 is balanced
+balance: spend last year,mens_email,0.0076,standardised difference vs control; under 0.1 is balanced
+balance: spend last year,womens_email,0.0065,standardised difference vs control; under 0.1 is balanced
+balance: new customer share,mens_email,-0.0009,standardised difference vs control; under 0.1 is balanced
+balance: new customer share,womens_email,0.0026,standardised difference vs control; under 0.1 is balanced
+balance: bought men's,mens_email,-0.0046,standardised difference vs control; under 0.1 is balanced
+balance: bought men's,womens_email,-0.0086,standardised difference vs control; under 0.1 is balanced
+balance: bought women's,mens_email,0.0076,standardised difference vs control; under 0.1 is balanced
+balance: bought women's,womens_email,0.0049,standardised difference vs control; under 0.1 is balanced

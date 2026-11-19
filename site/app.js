@@ -280,6 +280,41 @@
     });
   }
 
+  // ---------------------------------------------------------------- chart: estimates with intervals
+  function intervalPlot(container, rows, o) {
+    // On narrow screens long labels go above each row instead of beside it.
+    const stacked = !o.noLabels && container.clientWidth < 560;
+    const rowH = o.rowH || (stacked ? 48 : 34), top = 8, bottom = 26;
+    const h = top + rows.length * rowH + bottom;
+    const { s, w } = makeSvg(container, h, o.title);
+    const labelW = o.noLabels || stacked ? 0 : Math.ceil(measure(s, rows.map((r) => r.label))) + 14;
+    const valueW = Math.ceil(measure(s, rows.map((r) => o.fmt(r.est)))) + 10;
+    const x0 = labelW, plotW = w - labelW - valueW;
+    let lo = Math.min(0, ...rows.map((r) => r.lo)), hi = Math.max(0, ...rows.map((r) => r.hi));
+    const st = niceStep(hi - lo, 4);
+    lo = Math.floor(lo / st + 1e-9) * st; hi = Math.ceil(hi / st - 1e-9) * st;
+    const sx = (v) => x0 + ((v - lo) / (hi - lo)) * plotW;
+    for (let t = lo; t <= hi + st * 1e-6; t += st) {
+      const tv = +t.toFixed(10);
+      el("line", { x1: sx(tv), x2: sx(tv), y1: top, y2: h - bottom + 4, class: Math.abs(tv) < 1e-12 ? "axis" : "grid", "stroke-width": Math.abs(tv) < 1e-12 ? 1.5 : 1 }, s);
+      text(s, sx(tv), h - 8, o.tickFmt(tv), { class: "tick", "text-anchor": "middle" });
+    }
+    rows.forEach((r, i) => {
+      const y = top + i * rowH + (stacked ? rowH - 14 : rowH / 2);
+      if (stacked) text(s, 0, y - 14, r.label);
+      else if (!o.noLabels) text(s, 0, y + 4, r.label);
+      const g = el("g", {}, s);
+      el("rect", { x: 0, y: stacked ? y - rowH + 14 : y - rowH / 2, width: w, height: rowH, class: "hit" }, g);
+      const col = css(r.color || "--s1");
+      el("line", { x1: sx(r.lo), x2: sx(r.hi), y1: y, y2: y, stroke: col, "stroke-width": 2, "stroke-linecap": "round" }, g);
+      for (const v of [r.lo, r.hi]) el("line", { x1: sx(v), x2: sx(v), y1: y - 5, y2: y + 5, stroke: col, "stroke-width": 2, "stroke-linecap": "round" }, g);
+      marker(g, r.shape || "circle", sx(r.est), y, col);
+      text(s, Math.max(sx(r.hi), sx(r.est)) + 8, y + 4, o.fmt(r.est), { class: "value" });
+      hover(g, () => `<b>${r.tipTitle || r.label}</b>` + tipRow(null, o.estLabel || "Estimate", o.fmt(r.est)) +
+        tipRow(null, "95% interval", `${o.fmt(r.lo)} to ${o.fmt(r.hi)}`) + (r.tipExtra || ""));
+    });
+  }
+
   // ---------------------------------------------------------------- page
   let D;
   function kpis() {
@@ -443,13 +478,109 @@
     $("built").textContent = `Last built ${D.built}.`;
   }
 
+
+  // ---------------------------------------------------------------- real experiment
+  const ARM_LABEL = { mens_email: "Men's email", womens_email: "Women's email" };
+  const ARM_COLOR = { mens_email: "--s1", womens_email: "--s2" };
+  const ARM_SHAPE = { mens_email: "circle", womens_email: "square" };
+  const pts = (v) => (v >= 0 ? "+" : "") + (v * 100).toFixed(1);
+  const pts2 = (v) => (v >= 0 ? "+" : "") + (v * 100).toFixed(2);
+  const dollars = (v) => (v >= 0 ? "+$" : "-$") + Math.abs(v).toFixed(2);
+
+  function renderReal() {
+    const R = D.real;
+    legend($("legend-real"), Object.keys(ARM_LABEL).map((a) => ({ color: ARM_COLOR[a], label: ARM_LABEL[a], shape: ARM_SHAPE[a] })));
+    const panels = [
+      ["visited", "Extra visits per 100 customers", pts, (v) => trim(v * 100)],
+      ["converted", "Extra purchases per 100 customers", pts2, (v) => trim(v * 100)],
+      ["spend", "Extra spend per customer", dollars, (v) => (v < 0 ? "-$" : "$") + trim(Math.abs(v))],
+    ];
+    const box = $("chart-real");
+    box.innerHTML = panels.map(([, t]) => `<div><h3>${t}</h3><div class="chart"></div></div>`).join("");
+    panels.forEach(([m, , f, tf], k) => {
+      const rows = R.effects.filter((e) => e.metric === m).map((e) => ({
+        label: ARM_LABEL[e.arm], est: e.lift, lo: e.ci_low, hi: e.ci_high, color: ARM_COLOR[e.arm], shape: ARM_SHAPE[e.arm],
+        tipExtra: tipRow(null, "No email", m === "spend" ? "$" + e.control.toFixed(2) : fmt.pct(e.control, 2)) +
+          tipRow(null, "With email", m === "spend" ? "$" + e.treated.toFixed(2) : fmt.pct(e.treated, 2)),
+      }));
+      intervalPlot(box.children[k].querySelector(".chart"), rows, { title: panels[k][1], fmt: f, tickFmt: tf, noLabels: true, estLabel: "Lift" });
+    });
+
+    const order = ["mens only", "womens only", "both"];
+    const nice = { "mens only": "Bought men's only", "womens only": "Bought women's only", both: "Bought both" };
+    const segRows = [];
+    for (const b of order) for (const a of Object.keys(ARM_LABEL)) {
+      const r = R.segments.find((x) => x.segment === b && x.arm === a);
+      segRows.push({ label: `${nice[b]} · ${ARM_LABEL[a].toLowerCase()}`, tipTitle: `${nice[b]}, ${ARM_LABEL[a].toLowerCase()}`,
+        est: r.visit_lift, lo: r.visit_ci_low, hi: r.visit_ci_high, color: ARM_COLOR[a], shape: ARM_SHAPE[a] });
+    }
+    legend($("legend-real-seg"), Object.keys(ARM_LABEL).map((a) => ({ color: ARM_COLOR[a], label: ARM_LABEL[a], shape: ARM_SHAPE[a] })));
+    intervalPlot($("chart-real-seg"), segRows, { title: "Visit lift by purchase history", fmt: pts, tickFmt: (v) => trim(v * 100), estLabel: "Extra visits per 100" });
+  }
+
+  function realTables() {
+    const R = D.real;
+    const arm = (v) => ARM_LABEL[v] || v;
+    table($("table-real-effects"), [{ key: "arm", label: "Email", fmt: arm }, { key: "label", label: "Metric" },
+      { key: "control", label: "No email", fmt: (v) => (v < 0.5 ? fmt.pct(v, 2) : "$" + v.toFixed(2)) },
+      { key: "treated", label: "Email", fmt: (v) => (v < 0.5 ? fmt.pct(v, 2) : "$" + v.toFixed(2)) },
+      { key: "relative_lift", label: "Relative lift", fmt: (v) => "+" + fmt.pct(v, 0) },
+      { key: "p_holm", label: "p (Holm)", fmt: (v) => (v < 0.0001 ? "<0.0001" : v.toFixed(4)) }], R.effects);
+    table($("table-real-balance"), [{ key: "check", label: "Check" }, { key: "group", label: "Group", fmt: arm },
+      { key: "value", label: "Value", fmt: (v) => (Math.abs(v) >= 100 ? fmt.int(v) : v.toFixed(4)) }], R.balance);
+    table($("table-real-cuped"), [{ key: "arm", label: "Email", fmt: arm }, { key: "lift_raw", label: "Spend lift", fmt: dollars },
+      { key: "ci_width_raw", label: "Interval width", fmt: (v) => "$" + v.toFixed(3) }, { key: "lift_cuped", label: "With CUPED", fmt: dollars },
+      { key: "ci_width_cuped", label: "Interval width", fmt: (v) => "$" + v.toFixed(3) },
+      { key: "variance_reduction", label: "Variance removed", fmt: (v) => fmt.pct(v, 2) }], R.cuped);
+    table($("table-real-targeting"), [{ key: "policy", label: "Rule" },
+      { key: "incremental_spend_per_1000", label: "Extra spend per 1,000 customers", fmt: fmt.money }], R.targeting);
+    table($("table-real-power"), [{ key: "metric", label: "Metric" }, { key: "customers_per_group", label: "Customers per group", fmt: fmt.int },
+      { key: "min_detectable_lift", label: "Lift", fmt: (v) => (v < 0.1 ? pts2(v) + " pts" : dollars(v)) },
+      { key: "min_detectable_relative", label: "Relative", fmt: (v) => fmt.pct(v, 0) }], R.power);
+    const segT = R.segments.map((r) => ({ ...r, arm: arm(r.arm) }));
+    table($("table-real-seg"), [{ key: "segment", label: "Bought before" }, { key: "arm", label: "Email" },
+      { key: "customers", label: "Customers", fmt: fmt.int }, { key: "visit_lift", label: "Visit lift", fmt: (v) => pts(v) + " pts" },
+      { key: "visit_ci_low", label: "Low", fmt: pts }, { key: "visit_ci_high", label: "High", fmt: pts },
+      { key: "spend_lift", label: "Spend lift", fmt: dollars }], segT);
+  }
+
+  function realProse() {
+    const R = D.real;
+    const srm = R.balance.find((b) => b.check.startsWith("sample ratio"));
+    const maxSmd = Math.max(...R.balance.filter((b) => b.check.startsWith("balance")).map((b) => Math.abs(b.value)));
+    const n = R.balance.filter((b) => b.check === "customers").map((b) => fmt.int(b.value));
+    $("real-checks").textContent =
+      `Before looking at results I checked the split. The groups have ${n.join(", ")} customers, which is what a fair three-way split looks like (sample ratio test p = ${srm.value.toFixed(2)}). ` +
+      `Months since last purchase, spend last year, new customers and what people had bought before all line up across the groups, with the biggest gap at ${maxSmd.toFixed(3)} standard deviations.`;
+    const e = (a, m) => R.effects.find((x) => x.arm === a && x.metric === m);
+    const mv = e("mens_email", "visited"), wv = e("womens_email", "visited"), mc = e("mens_email", "converted"), ms = e("mens_email", "spend"), ws = e("womens_email", "spend");
+    $("real-effects").textContent =
+      `Both emails worked. The men's email lifted visits from ${fmt.pct(mv.control)} to ${fmt.pct(mv.treated)}, more than doubled the purchase rate (${fmt.pct(mc.control, 2)} to ${fmt.pct(mc.treated, 2)}) ` +
+      `and added about ${dollars(ms.lift).replace("+", "")} of spend per customer emailed. The women's email did roughly half as well: visits up to ${fmt.pct(wv.treated)}, spend up ${dollars(ws.lift).replace("+", "")} per customer. ` +
+      `All six differences hold up after a Holm correction for testing six things at once.`;
+    const seg = (b, a) => R.segments.find((x) => x.segment === b && x.arm === a);
+    const t = R.targeting, mensAll = t.find((x) => x.policy.startsWith("men's")), pick = t.find((x) => x.policy.startsWith("pick"));
+    $("real-segments").textContent =
+      `The interesting part is who each email works for. The women's email barely moved people who had only bought men's items (${pts(seg("mens only", "womens_email").visit_lift)} visits per 100), ` +
+      `but the men's email worked on everyone, including people who had only bought women's items (${pts(seg("womens only", "mens_email").visit_lift)}, about the same as the women's email got from them). ` +
+      `So sending different emails by purchase history doesn't help much here. A rule fitted on half the customers and scored on the other half brought in ${fmt.money(pick.incremental_spend_per_1000)} extra per 1,000 customers, ` +
+      `against ${fmt.money(mensAll.incremental_spend_per_1000)} for just sending everyone the men's email.`;
+    const c = R.cuped[0], pw = R.power;
+    const conv = pw.find((x) => x.metric === "purchase rate"), wneed = pw.find((x) => x.metric.startsWith("purchase rate (womens"));
+    $("real-power").textContent =
+      `Two things that didn't pan out, which are worth knowing. CUPED, which uses spend from before the test to cut noise, removed only ${fmt.pct(c.variance_reduction, 2)} of the variance, because last year's spend barely predicts spend in a two-week window (correlation ${c.corr_with_covariate.toFixed(2)}). ` +
+      `And purchases are rare enough that with about ${fmt.int(conv.customers_per_group)} customers per group, the smallest purchase-rate change this test could reliably catch was ${fmt.pct(conv.min_detectable_relative, 0)} in relative terms. ` +
+      `The women's email effect would have needed about ${fmt.int(wneed.customers_per_group)} per group for 80% power, so this test was big enough, but not by a huge margin.`;
+  }
+
   let lastW = 0;
   addEventListener("resize", () => {
     if (!D || Math.abs(innerWidth - lastW) < 20) return;
     lastW = innerWidth;
     render();
+    if (D.real) renderReal();
   });
-  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => D && render());
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { if (D) { render(); if (D.real) renderReal(); } });
 
   fetch("data/site.json")
     .then((r) => r.json())
@@ -457,6 +588,7 @@
       D = data;
       lastW = innerWidth;
       kpis(); render(); tables(); prose();
+      if (D.real) { $("real").hidden = false; renderReal(); realTables(); realProse(); }
     })
     .catch((e) => {
       document.querySelector("main").insertAdjacentHTML("afterbegin", `<p>Couldn't load the data (${e.message}). Run python src/build_site.py first.</p>`);

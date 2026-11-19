@@ -50,8 +50,21 @@ def build(out_dir: Path) -> dict:
     lead_metrics = r("12_lead_scoring_metrics")
     pooled = lead_metrics[lead_metrics.test_month.astype(str) == "all"]
 
+    real = None
+    if (out_dir / "15_hillstrom_effects.csv").exists():
+        seg = r("15_hillstrom_segments")
+        real = {
+            "balance": records(r("15_hillstrom_balance")),
+            "effects": records(r("15_hillstrom_effects")),
+            "cuped": records(r("15_hillstrom_cuped")),
+            "segments": records(seg[seg.dimension == "previous purchases"]),
+            "targeting": records(r("15_hillstrom_targeting")),
+            "power": records(r("15_hillstrom_power")),
+        }
+
     return {
         "built": date.today().isoformat(),
+        "real": real,
         "kpi": records(r("10_kpi_summary"))[0],
         "channels": records(ch, ["channel", "channel_type", "spend", "leads", "customers", "revenue", "ctr",
                                  "cost_per_lead", "cac", "roas", "ltv_to_cac", "payback_months", "monthly_churn"]),

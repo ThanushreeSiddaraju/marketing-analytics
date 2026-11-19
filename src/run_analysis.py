@@ -4,12 +4,14 @@ Outputs (output/):
   00_data_quality.csv         what the cleaning step fixed
   01_... .. 10_... .csv       one CSV per analysis query
   11_... .. 14_... .csv       attribution models, lead scoring, MMM and budget split
+  15_hillstrom_*.csv          the real email experiment (downloaded on first run)
   marketing_report.xlsx       all of the above, one sheet each
 
 Usage:
   python src/run_analysis.py                 # uses data/raw (run make_sample_data.py first)
   python src/run_analysis.py --raw my/exports --skip-build
   python src/run_analysis.py --skip-models   # SQL only
+  python src/run_analysis.py --skip-real     # don't download or analyse the real dataset
 """
 from __future__ import annotations
 
@@ -20,6 +22,7 @@ import duckdb
 import pandas as pd
 
 import attribution
+import hillstrom
 import lead_scoring
 import mmm
 from build_model import build
@@ -43,6 +46,7 @@ def main() -> None:
     ap.add_argument("--out", type=Path, default=ROOT / "output")
     ap.add_argument("--skip-build", action="store_true", help="reuse the existing DuckDB file")
     ap.add_argument("--skip-models", action="store_true", help="only run the SQL")
+    ap.add_argument("--skip-real", action="store_true", help="skip the real Hillstrom email experiment")
     args = ap.parse_args()
     args.out.mkdir(parents=True, exist_ok=True)
 
@@ -58,6 +62,11 @@ def main() -> None:
         m = mmm.run()
         m.pop("_weekly").to_csv(args.out / "13_mmm_weekly_data.csv", index=False)
         results.update(m)
+    if not args.skip_real:
+        try:
+            results.update(hillstrom.run())
+        except RuntimeError as e:
+            print(f"  skipping the real dataset: {e}")
 
     with pd.ExcelWriter(args.out / "marketing_report.xlsx") as xl:
         for name, df in results.items():

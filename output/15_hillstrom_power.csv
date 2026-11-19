@@ -1,0 +1,8 @@
+metric,control_mean,customers_per_group,min_detectable_lift,min_detectable_relative
+visit rate,0.106167,21306,0.008362,0.078761
+purchase rate,0.005726,21306,0.002048,0.357686
+spend per customer,0.652789,21306,0.314546,0.481849
+purchase rate (mens email effect),0.005726,3063,0.006805,1.188422
+spend per customer (mens email effect),0.652789,5954,0.769827,1.179289
+purchase rate (womens email effect),0.005726,11721,0.003111,0.543313
+spend per customer (womens email effect),0.652789,15809,0.424412,0.650152

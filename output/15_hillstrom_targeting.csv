@@ -1,0 +1,5 @@
+policy,incremental_spend_per_1000,emails_per_1000,rule
+email nobody,0.0,0,
+men's email to everyone,690.359556,1000,
+women's email to everyone,334.60575,1000,
+pick the email by what they bought before,590.21845,1000,mens only: mens email; womens only: womens email; both: mens email
