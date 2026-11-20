@@ -46,7 +46,7 @@ Mobile clicks are cheap but convert at roughly half the rate of desktop. In Nort
 
 Free-trial ads got about 20% more clicks than the average ad on the same channel and converted best once people landed. Ebook offers did worst.
 
-For every channel, the step that loses the most people is between sales-qualified lead and customer. Only a quarter of SQLs buy, which is more of a sales and pricing question than a marketing one.
+Once someone becomes a lead, the step that loses the most people is between sales-qualified lead and customer, and that's true for every channel. Only a quarter of SQLs buy, which is more of a sales and pricing question than a marketing one.
 
 The cleaning step caught 403 duplicate ad rows, 15 negative spend values, 20 rows with more clicks than impressions, 2,618 channel names spelled differently (facebook, FB Ads, meta...), 1,277 visits with no device, and 30 duplicate leads from the CRM. It also flagged a day in August where Google Display billed spend but reported zero impressions. Details are in [output/00_data_quality.csv](output/00_data_quality.csv).
 
@@ -113,6 +113,8 @@ Two things didn't help, and I've left them in because they're worth knowing. CUP
 
 The tests check the stats helpers against scipy and against data with a known answer, check that the sample ratio test catches a broken split, and check that the real results match the numbers usually reported for this dataset.
 
+The data belongs to Kevin Hillstrom, who released it publicly through MineThatData for his 2008 data mining challenge. I don't store a copy in this repo; the script fetches it from his site.
+
 ## Agents
 
 `src/agents/` has four LLM agents built on the Anthropic SDK, with no agent framework. They work on the same DuckDB database as everything else.
@@ -134,6 +136,30 @@ What I cared about most was not letting a made-up number through. So none of the
 The tests in `tests/test_agents.py` don't call the API. A fake client plays back scripted model turns, which is enough to test the parts the safety depends on: the SQL guard (including going straight at the database connection), wrong numbers being caught and sent back, the reviewer rejecting a right number from the wrong query, and the writer being made to remove a number it invented.
 
 ## How it's put together
+
+```
+src/
+  make_sample_data.py   generates the Lumora data, with planted data problems
+  build_model.py        loads the raw CSVs into DuckDB and runs the model SQL
+  run_analysis.py       runs everything below and writes output/
+  attribution.py        Markov chain and Shapley attribution
+  lead_scoring.py       XGBoost and logistic regression lead scoring
+  mmm.py                marketing mix model and budget optimiser
+  hillstrom.py          the real email experiment
+  build_site.py         bundles the outputs into one JSON file for the site
+  agent_cli.py          runs the agents from the command line
+  agents/               analyst, reviewer, data quality and writer agents, plus the SQL guard and number checks
+sql/
+  model/                staging (cleaning) and the star schema
+  analysis/             the ten analysis queries
+  real/                 loading and cleaning the Hillstrom data
+evals/                  32 golden questions and the eval runner for the analyst agent
+tests/                  54 tests: pipeline, models, agents and the experiment stats
+site/                   the dashboard: index.html, style.css, app.js
+output/                 every result as CSV, plus marketing_report.xlsx
+docs/                   my notes on the plan and on real data sources
+.github/workflows/      ci.yml runs the tests, pages.yml rebuilds and publishes the site
+```
 
 Raw CSVs go into DuckDB, get cleaned in `sql/model/01_staging.sql`, and end up as a small star schema in `sql/model/02_marts.sql`:
 
@@ -184,6 +210,8 @@ python src/agent_cli.py brief
 python evals/run_evals.py
 ```
 
+The `ask`, `quality` and `brief` commands save what they produce to `output/agents/`, and the eval writes `evals/results/latest.csv`.
+
 Results go to `output/`, one CSV per query or model output plus an Excel file with everything in it. The whole thing takes about 20 seconds after the first run, which also downloads the 4 MB Hillstrom file. Add `--skip-models` to only run the SQL, or `--skip-real` to leave out the real dataset. The tests check things like the funnel never getting bigger, spend totals matching, attribution credit adding up to one per lead, the Shapley code against small cases worked out by hand, the lead model not using anything from after the form was filled in, and the MMM getting the biggest channel's effect back within 15%.
 
 ## The site
@@ -197,4 +225,4 @@ python -m http.server 8000 --directory site
 
 ## What's next
 
-Running the agent eval and putting the score here. My notes on the plan and on getting real data are in [docs/](docs/).
+The next step is running the agent eval with a real API key and putting the score here. After that, roughly in order: a Bayesian version of the mix model to compare against mine, daily KPI forecasts with anomaly flags, a geo-lift test, the GA4 sample as a second real dataset, and moving the SQL models to dbt with tests. My notes on the plan and on getting real data are in [docs/](docs/).
