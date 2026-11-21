@@ -107,10 +107,13 @@
 
   // ---------------------------------------------------------------- tables
   function table(container, cols, rows) {
-    const head = cols.map((c) => `<th scope="col">${c.label}</th>`).join("");
-    const body = rows.map((r) => "<tr>" + cols.map((c) => {
+    // Text columns line up on the left, numbers on the right.
+    const isText = cols.map((c) => rows.every((r) => r[c.key] == null || typeof r[c.key] === "string"));
+    const cls = (i) => (isText[i] ? ' class="t"' : "");
+    const head = cols.map((c, i) => `<th scope="col"${cls(i)}>${c.label}</th>`).join("");
+    const body = rows.map((r) => "<tr>" + cols.map((c, i) => {
       const v = r[c.key];
-      return `<td>${v === null || v === undefined ? "–" : c.fmt ? c.fmt(v) : v}</td>`;
+      return `<td${cls(i)}>${v === null || v === undefined ? "–" : c.fmt ? c.fmt(v) : v}</td>`;
     }).join("") + "</tr>").join("");
     container.innerHTML = `<table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table>`;
   }

@@ -110,7 +110,7 @@ summary { cursor: pointer; color: var(--link); width: fit-content; }
 .table-wrap { overflow-x: auto; margin-top: 8px; }
 table { border-collapse: collapse; width: 100%; font-size: 13px; }
 th, td { padding: 6px 10px; text-align: right; border-bottom: 1px solid var(--grid); white-space: nowrap; font-variant-numeric: tabular-nums; }
-th:first-child, td:first-child { text-align: left; }
+th:first-child, td:first-child, th.t, td.t { text-align: left; }
 th { font-weight: 600; color: var(--ink-2); }
 
 .tip {
