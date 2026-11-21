@@ -41,7 +41,8 @@ SELECT DISTINCT
     region,
     CAST(impressions AS BIGINT)           AS impressions,
     CAST(LEAST(clicks, impressions) AS BIGINT) AS clicks,
-    ROUND(ABS(CAST(spend AS DOUBLE)), 2)  AS spend
+    -- stored as an exact decimal so totals don't depend on the order rows are added up
+    CAST(ROUND(ABS(CAST(spend AS DOUBLE)), 2) AS DECIMAL(14, 2)) AS spend
 FROM raw_ad_daily;
 
 CREATE OR REPLACE TABLE stg_sessions AS

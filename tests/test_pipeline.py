@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import subprocess
 import sys
+from decimal import Decimal
 from pathlib import Path
 
 import duckdb
@@ -31,7 +32,8 @@ def built(tmp_path_factory):
 
 
 def q(built, sql):
-    return built["con"].execute(sql).fetchone()[0]
+    v = built["con"].execute(sql).fetchone()[0]
+    return float(v) if isinstance(v, Decimal) else v  # spend is stored as an exact decimal
 
 
 def test_cleaning_fixed_every_injected_issue(built):

@@ -33,4 +33,4 @@ FROM dim_campaign c
 LEFT JOIN ads a    USING (campaign_id)
 LEFT JOIN visits v USING (campaign_id)
 LEFT JOIN crm m    USING (campaign_id)
-ORDER BY roas_rank;
+ORDER BY roas_rank, campaign_id;

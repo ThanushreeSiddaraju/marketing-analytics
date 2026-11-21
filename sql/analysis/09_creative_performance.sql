@@ -34,4 +34,4 @@ JOIN ads a USING (creative_id)
 LEFT JOIN v USING (creative_id)
 LEFT JOIN l USING (creative_id)
 WINDOW w AS (PARTITION BY c.channel)
-ORDER BY ctr_index_vs_channel DESC;
+ORDER BY ctr_index_vs_channel DESC, creative_id;

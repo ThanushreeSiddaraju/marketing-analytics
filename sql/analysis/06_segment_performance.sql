@@ -28,4 +28,4 @@ SELECT
 FROM ads a
 JOIN v USING (device, region)
 LEFT JOIN l USING (device, region)
-ORDER BY roas DESC NULLS LAST;
+ORDER BY roas DESC NULLS LAST, device, region;

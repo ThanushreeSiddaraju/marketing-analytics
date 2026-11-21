@@ -34,4 +34,4 @@ FROM dim_channel d
 LEFT JOIN ads a    USING (channel)
 LEFT JOIN visits v USING (channel)
 LEFT JOIN crm c    USING (channel)
-ORDER BY spend DESC, revenue DESC;
+ORDER BY spend DESC, revenue DESC, channel;

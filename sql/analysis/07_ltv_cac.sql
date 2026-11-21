@@ -37,4 +37,4 @@ SELECT
 FROM by_channel b
 JOIN dim_channel d USING (channel)
 LEFT JOIN spend s USING (channel)
-ORDER BY ltv_to_cac DESC NULLS LAST;
+ORDER BY ltv_to_cac DESC NULLS LAST, customers DESC, channel;

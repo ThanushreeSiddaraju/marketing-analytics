@@ -23,4 +23,4 @@ SELECT
         ELSE 'SQL -> Customer'
     END AS biggest_leak_after_lead
 FROM v JOIN l USING (channel) JOIN dim_channel d USING (channel)
-ORDER BY visit_to_customer DESC;
+ORDER BY visit_to_customer DESC, channel;
