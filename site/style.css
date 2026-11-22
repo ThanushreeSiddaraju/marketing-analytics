@@ -62,6 +62,14 @@ a { color: var(--link); }
 
 .top { padding: 48px 0 24px; }
 .eyebrow { margin: 0 0 8px; color: var(--muted); font-size: 14px; letter-spacing: 0.02em; }
+.topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+.topbar .eyebrow { margin: 0; }
+.theme {
+  font: inherit; font-size: 13px; color: var(--ink-2); background: var(--surface);
+  border: 1px solid var(--border); border-radius: 999px; padding: 4px 12px; cursor: pointer;
+}
+.theme:hover { color: var(--ink); }
+.theme:focus-visible { outline: 2px solid var(--s1); outline-offset: 2px; }
 h1 { margin: 0 0 16px; font-size: clamp(26px, 4.4vw, 38px); line-height: 1.2; font-weight: 650; max-width: 22em; text-wrap: balance; }
 .lede { margin: 0 0 24px; color: var(--ink-2); max-width: 44em; }
 .toc { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 14px; padding-top: 16px; border-top: 1px solid var(--grid); }

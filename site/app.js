@@ -583,7 +583,24 @@
     render();
     if (D.real) renderReal();
   });
-  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { if (D) { render(); if (D.real) renderReal(); } });
+  const redraw = () => { if (D) { render(); if (D.real) renderReal(); } };
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { redraw(); syncThemeButton(); });
+
+  // Theme toggle: follows the system setting until someone picks one, then remembers it.
+  const themeBtn = $("theme");
+  const isDark = () => {
+    const t = document.documentElement.dataset.theme;
+    return t ? t === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+  };
+  function syncThemeButton() { themeBtn.textContent = isDark() ? "Light mode" : "Dark mode"; }
+  themeBtn.addEventListener("click", () => {
+    const next = isDark() ? "light" : "dark";
+    document.documentElement.dataset.theme = next;
+    try { localStorage.setItem("theme", next); } catch (e) { /* private mode: just don't remember */ }
+    syncThemeButton();
+    redraw();
+  });
+  syncThemeButton();
 
   fetch("data/site.json")
     .then((r) => r.json())

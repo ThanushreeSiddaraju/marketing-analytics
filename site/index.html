@@ -12,12 +12,16 @@
   <meta name="twitter:card" content="summary">
   <link rel="canonical" href="https://thanushreesiddaraju.github.io/marketing-analytics/">
   <link rel="stylesheet" href="style.css">
+  <script>try { const t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}</script>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect x='2' y='8' width='3' height='6' rx='1' fill='%232a78d6'/%3E%3Crect x='6.5' y='4' width='3' height='10' rx='1' fill='%232a78d6'/%3E%3Crect x='11' y='2' width='3' height='12' rx='1' fill='%232a78d6'/%3E%3C/svg%3E">
 </head>
 <body>
 <header class="top">
   <div class="wrap">
-    <p class="eyebrow">Marketing analytics</p>
+    <div class="topbar">
+      <p class="eyebrow">Marketing analytics</p>
+      <button type="button" class="theme" id="theme" aria-label="Switch colour theme">Dark mode</button>
+    </div>
     <h1>Where Lumora's ad money went in 2025, and where it should go next</h1>
     <p class="lede">Lumora is a made-up B2B SaaS with three plans and 19 campaigns across Google, Meta, LinkedIn, TikTok, email and affiliates. I generated a year of ads, website visits, CRM stages and invoices for it, cleaned it in DuckDB, and worked through it the way a growth team would. All numbers below come from that generated data, except one section near the end that analyses a real email experiment.</p>
     <nav class="toc" aria-label="Sections">
