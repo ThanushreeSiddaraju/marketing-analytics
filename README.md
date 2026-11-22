@@ -157,11 +157,11 @@ evals/                  32 golden questions and the eval runner for the analyst 
 tests/                  54 tests: pipeline, models, agents and the experiment stats
 site/                   the dashboard: index.html, style.css, app.js
 output/                 every result as CSV, plus marketing_report.xlsx
-docs/                   my notes on the plan and on real data sources
+docs/                   notes on the plan and real data sources, and a data dictionary
 .github/workflows/      ci.yml runs the tests, pages.yml rebuilds and publishes the site
 ```
 
-Raw CSVs go into DuckDB, get cleaned in `sql/model/01_staging.sql`, and end up as a small star schema in `sql/model/02_marts.sql`:
+Raw CSVs go into DuckDB, get cleaned in `sql/model/01_staging.sql`, and end up as a small star schema in `sql/model/02_marts.sql` (every column is described in [docs/data-dictionary.md](docs/data-dictionary.md)):
 
 - `fact_ad_daily`: spend, impressions and clicks by day, creative, device and region
 - `fact_sessions`: one row per website visit
