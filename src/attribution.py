@@ -10,6 +10,7 @@ Usage:  python src/attribution.py [--db data/marketing.duckdb] [--out output]
 from __future__ import annotations
 
 import argparse
+from itertools import pairwise
 from math import factorial
 from pathlib import Path
 
@@ -56,9 +57,9 @@ def markov_attribution(journeys: pd.DataFrame, weight: str | None = None) -> pd.
     n = len(states)
 
     counts = np.zeros((n, n))
-    for path, conv in zip(journeys.path, journeys.converted):
+    for path, conv in zip(journeys.path, journeys.converted, strict=True):
         seq = ["(start)", *path, "(conversion)" if conv else "(null)"]
-        for a, b in zip(seq, seq[1:]):
+        for a, b in pairwise(seq):
             counts[idx[a], idx[b]] += 1
     counts[idx["(conversion)"], idx["(conversion)"]] = 1
     counts[idx["(null)"], idx["(null)"]] = 1
@@ -86,7 +87,7 @@ def markov_attribution(journeys: pd.DataFrame, weight: str | None = None) -> pd.
     credit = pd.Series(0.0, index=channels)
     conv_j = journeys[journeys.converted]
     vals = conv_j[weight] if weight else pd.Series(1.0, index=conv_j.index)
-    for path, val in zip(conv_j.path, vals):
+    for path, val in zip(conv_j.path, vals, strict=True):
         on_path = list(dict.fromkeys(path))
         re = effect[on_path]
         credit[on_path] += val * (re / re.sum() if re.sum() > 0 else 1 / len(on_path))
@@ -126,7 +127,7 @@ def shapley_attribution(journeys: pd.DataFrame, weight: str | None = None) -> pd
 
 def rule_based(journeys: pd.DataFrame) -> dict[str, pd.Series]:
     rows = []
-    for path, conv, rev in zip(journeys.path, journeys.converted, journeys.revenue):
+    for path, conv, rev in zip(journeys.path, journeys.converted, journeys.revenue, strict=True):
         if not conv:
             continue
         k = len(path)

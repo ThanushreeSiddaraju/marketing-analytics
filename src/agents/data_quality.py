@@ -50,7 +50,7 @@ class QualityReport:
 
     @property
     def confirmed(self) -> list[dict]:
-        return [i for i, c in zip(self.issues, self.checks) if c.ok]
+        return [i for i, c in zip(self.issues, self.checks, strict=True) if c.ok]
 
 
 def inspect(client, sql: SafeSQL, effort: str = "high") -> QualityReport:

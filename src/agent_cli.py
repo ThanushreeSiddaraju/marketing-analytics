@@ -60,10 +60,10 @@ def main() -> None:
     elif args.command == "quality":
         rep = inspect(client, sql)
         print(rep.summary)
-        for i, c in zip(rep.issues, rep.checks):
+        for i, c in zip(rep.issues, rep.checks, strict=True):
             print(f"  {'ok ' if c.ok else 'BAD'} {i['table']}: {i['problem']} ({i['rows_affected']:g} rows) -> {i['fix']}")
         (args.out / "data_quality.json").write_text(json.dumps(
-            dict(summary=rep.summary, issues=[dict(i, count_checked=c.ok) for i, c in zip(rep.issues, rep.checks)]),
+            dict(summary=rep.summary, issues=[dict(i, count_checked=c.ok) for i, c in zip(rep.issues, rep.checks, strict=True)]),
             indent=2, default=str))
 
     else:

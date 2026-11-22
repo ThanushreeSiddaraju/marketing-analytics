@@ -1,0 +1,10 @@
+line-length = 120
+target-version = "py312"
+
+[lint]
+select = ["E", "F", "W", "I", "B", "UP"]
+# Long lines are mostly SQL and prose in docstrings; I'd rather keep those readable than wrapped.
+ignore = ["E501"]
+
+[lint.isort]
+known-first-party = ["agents", "attribution", "build_model", "hillstrom", "lead_scoring", "mmm", "run_analysis"]

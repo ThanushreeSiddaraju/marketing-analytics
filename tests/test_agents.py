@@ -13,6 +13,7 @@ import sys
 from pathlib import Path
 from types import SimpleNamespace as NS
 
+import duckdb
 import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -23,7 +24,6 @@ from agents.llm import AgentFailed  # noqa: E402
 from agents.sql_tool import QueryRejected, SafeSQL  # noqa: E402
 from agents.verify import check_text, close_enough, numbers_in  # noqa: E402
 from build_model import build  # noqa: E402
-
 
 # ---------------------------------------------------------------- fake model
 
@@ -106,9 +106,9 @@ def test_guard_allows_normal_analysis(sql):
 
 def test_database_layer_blocks_files_even_without_the_parser(sql):
     # skip the parser and go straight at the connection
-    with pytest.raises(Exception):
+    with pytest.raises(duckdb.Error):
         sql.con.execute("SELECT * FROM read_csv_auto('data/raw/leads.csv')")
-    with pytest.raises(Exception):
+    with pytest.raises(duckdb.Error):
         sql.con.execute("SET enable_external_access = true")
 
 

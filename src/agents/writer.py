@@ -49,7 +49,7 @@ def write_brief(client, answers: list[Answer], effort: str = "medium") -> Brief:
         findings.append(f"Q: {a.question}\nA: {a.answer}\nChecked numbers: {nums}")
     messages = [{"role": "user", "content": "Findings:\n\n" + "\n\n".join(findings)}]
 
-    for attempt in range(2):
+    for _ in range(2):
         out = run_agent(client, system=SYSTEM, messages=messages, output_schema=OUTPUT, effort=effort).output
         bad = check_text(out["headline"] + "\n" + "\n".join(out["paragraphs"]), values)
         if not bad:

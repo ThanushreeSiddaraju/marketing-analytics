@@ -236,7 +236,9 @@ def build_leads_orders(rng, s: pd.DataFrame, campaigns: pd.DataFrame, creatives:
     pv = first.pageviews.to_numpy()
     eng = np.clip(0.8 + 0.06 * pv, 0.8, 1.4)  # engaged leads progress more
 
-    ch_p = lambda key: L.channel.map(lambda c: params[c][key]).to_numpy()
+    def ch_p(key):
+        return L.channel.map(lambda c: params[c][key]).to_numpy()
+
     mql = rng.random(n) < np.clip(ch_p("mql") * eng, 0, 0.95)
     sql = mql & (rng.random(n) < np.clip(ch_p("sql") * SIZE_WIN[size_idx], 0, 0.95))
     won = sql & (rng.random(n) < np.clip(ch_p("win") * SIZE_WIN[size_idx] * eng, 0, 0.95))
@@ -271,10 +273,10 @@ def build_leads_orders(rng, s: pd.DataFrame, campaigns: pd.DataFrame, creatives:
             if d > END:
                 break
             orders.append((L.user_id.iat[i], d, L.mrr.iat[i], L.plan.iat[i], m == 0))
-    O = pd.DataFrame(orders, columns=["user_id", "order_date", "revenue", "plan", "is_first_order"])
-    O = O.sort_values("order_date", kind="stable").reset_index(drop=True)
-    O.insert(0, "order_id", [f"O{i:07d}" for i in range(len(O))])
-    return L, O
+    orders_df = pd.DataFrame(orders, columns=["user_id", "order_date", "revenue", "plan", "is_first_order"])
+    orders_df = orders_df.sort_values("order_date", kind="stable").reset_index(drop=True)
+    orders_df.insert(0, "order_id", [f"O{i:07d}" for i in range(len(orders_df))])
+    return L, orders_df
 
 
 def inject_quality_issues(rng, ad: pd.DataFrame, s: pd.DataFrame, L: pd.DataFrame):

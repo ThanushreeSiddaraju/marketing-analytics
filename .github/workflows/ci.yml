@@ -18,7 +18,9 @@ jobs:
         with:
           path: data/real
           key: hillstrom-0e5893329d8b
-      - run: pip install -r requirements.txt
+      - run: pip install -r requirements.txt ruff
+      - name: Lint
+        run: ruff check .
       - name: Generate data, build model, run analysis
         run: |
           python src/make_sample_data.py
