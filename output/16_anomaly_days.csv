@@ -1,0 +1,42 @@
+date,channel,metric,value,expected,robust_z,direction,label
+2025-03-10,Meta Ads,ctr,0.0037,0.0123,-11.16,low,click-through rate
+2025-03-11,Meta Ads,ctr,0.0038,0.0123,-11.06,low,click-through rate
+2025-03-12,Meta Ads,ctr,0.0042,0.0123,-9.88,low,click-through rate
+2025-03-13,Meta Ads,ctr,0.0036,0.0122,-9.75,low,click-through rate
+2025-03-14,Meta Ads,ctr,0.004,0.0121,-6.93,low,click-through rate
+2025-03-15,Meta Ads,ctr,0.0041,0.012,-5.17,low,click-through rate
+2025-03-16,Meta Ads,ctr,0.0036,0.0118,-5.2,low,click-through rate
+2025-03-30,LinkedIn Ads,ctr,0.0094,0.006,4.17,high,click-through rate
+2025-05-02,Affiliate,ctr,0.0195,0.0152,4.01,high,click-through rate
+2025-05-17,TikTok Ads,ctr,0.0051,0.0091,-7.4,low,click-through rate
+2025-06-21,TikTok Ads,ctr,0.005,0.009,-4.72,low,click-through rate
+2025-08-08,Meta Ads,ctr,0.0089,0.0128,-5.28,low,click-through rate
+2025-08-14,Google Display,impr_per_dollar,0.0,,-inf,low,impressions per dollar
+2025-10-01,LinkedIn Ads,cpm,43.7166,32.0293,12.31,high,"cost per 1,000 impressions"
+2025-10-01,LinkedIn Ads,impr_per_dollar,22.8746,31.2216,-9.02,low,impressions per dollar
+2025-10-02,LinkedIn Ads,cpm,44.3071,32.0293,12.93,high,"cost per 1,000 impressions"
+2025-10-02,LinkedIn Ads,impr_per_dollar,22.5697,31.2216,-9.35,low,impressions per dollar
+2025-10-03,LinkedIn Ads,cpm,42.6827,32.0293,11.22,high,"cost per 1,000 impressions"
+2025-10-03,LinkedIn Ads,impr_per_dollar,23.4287,31.2216,-8.42,low,impressions per dollar
+2025-10-04,LinkedIn Ads,cpm,44.5684,32.0293,13.2,high,"cost per 1,000 impressions"
+2025-10-04,LinkedIn Ads,impr_per_dollar,22.4374,31.2216,-9.49,low,impressions per dollar
+2025-10-05,LinkedIn Ads,cpm,43.7069,32.148,12.13,high,"cost per 1,000 impressions"
+2025-10-05,LinkedIn Ads,impr_per_dollar,22.8797,31.1062,-8.92,low,impressions per dollar
+2025-10-06,LinkedIn Ads,cpm,43.4918,32.1811,11.85,high,"cost per 1,000 impressions"
+2025-10-06,LinkedIn Ads,impr_per_dollar,22.9928,31.0742,-8.77,low,impressions per dollar
+2025-10-07,LinkedIn Ads,cpm,42.7103,32.1811,11.03,high,"cost per 1,000 impressions"
+2025-10-07,LinkedIn Ads,impr_per_dollar,23.4136,31.0742,-8.31,low,impressions per dollar
+2025-10-08,LinkedIn Ads,cpm,42.368,32.1811,10.68,high,"cost per 1,000 impressions"
+2025-10-08,LinkedIn Ads,impr_per_dollar,23.6027,31.0742,-8.11,low,impressions per dollar
+2025-10-09,LinkedIn Ads,cpm,42.8721,32.2412,11.12,high,"cost per 1,000 impressions"
+2025-10-09,LinkedIn Ads,impr_per_dollar,23.3252,31.0163,-8.36,low,impressions per dollar
+2025-10-10,LinkedIn Ads,cpm,42.5562,32.2963,10.71,high,"cost per 1,000 impressions"
+2025-10-10,LinkedIn Ads,impr_per_dollar,23.4983,30.9633,-8.13,low,impressions per dollar
+2025-10-11,LinkedIn Ads,cpm,42.7294,32.3024,10.89,high,"cost per 1,000 impressions"
+2025-10-11,LinkedIn Ads,impr_per_dollar,23.4031,30.9574,-8.23,low,impressions per dollar
+2025-10-12,LinkedIn Ads,cpm,44.796,32.3024,13.04,high,"cost per 1,000 impressions"
+2025-10-12,LinkedIn Ads,impr_per_dollar,22.3234,30.9574,-9.41,low,impressions per dollar
+2025-10-13,LinkedIn Ads,cpm,41.9024,32.3303,9.98,high,"cost per 1,000 impressions"
+2025-10-13,LinkedIn Ads,impr_per_dollar,23.865,30.9307,-7.7,low,impressions per dollar
+2025-10-14,LinkedIn Ads,cpm,43.5324,32.3665,11.63,high,"cost per 1,000 impressions"
+2025-10-14,LinkedIn Ads,impr_per_dollar,22.9714,30.8962,-8.65,low,impressions per dollar

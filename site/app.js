@@ -449,6 +449,18 @@
       { key: "signups_after_true", label: "After (true)", fmt: (v) => v.toFixed(1) }], D.mmm.budget);
     table($("table-quality"), [{ key: "check", label: "Problem" }, { key: "table", label: "Table" },
       { key: "rows_affected", label: "Rows", fmt: fmt.int }, { key: "action", label: "What the SQL does" }], D.quality);
+    if (D.anomalies) {
+      const metricName = { ctr: "Click-through rate", cpm: "CPM", impr_per_dollar: "Impressions per dollar" };
+      const day = (d) => new Date(d + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" });
+      table($("table-anomalies"), [
+        { key: "when", label: "When" }, { key: "channel", label: "Channel" }, { key: "what", label: "What" },
+        { key: "days", label: "Days", fmt: fmt.int }, { key: "note", label: "Cause" },
+      ], D.anomalies.map((e) => ({
+        ...e,
+        when: e.start === e.end ? day(e.start) : `${day(e.start)} to ${day(e.end)}`,
+        what: `${metricName[e.metric] || e.metric} ${e.direction === "high" ? "too high" : "too low"}`,
+      })));
+    }
   }
 
   function prose() {

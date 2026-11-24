@@ -19,7 +19,7 @@ I built the whole thing myself, from the data to the page it's published on:
 - Mix modelling and optimisation: adstock and saturation curves with weak priors, bootstrap intervals, parameter recovery against known truth, and a constrained budget optimiser.
 - Experiments and statistics: a real 64,000-customer randomised email test with sample ratio and balance checks, Welch intervals, Holm correction, CUPED, power analysis, segment effects and a held-out targeting check.
 - LLM agents: four agents on the Anthropic SDK with tool use and structured outputs, two layers of SQL lockdown, every number re-checked in code, a reviewer agent and a 32-question eval.
-- Engineering: a reproducible generator with planted data problems, 54 pytest tests, and GitHub Actions that rebuild the data, rerun every model and publish the site on every push.
+- Engineering: a reproducible generator with planted data problems, 59 pytest tests, a ruff lint step, and GitHub Actions that rebuild the data, rerun every model and publish the site on every push.
 - Data visualisation: hand-written SVG charts with no chart library, a colour-blind-checked palette, light and dark modes, tooltips and a table behind every chart.
 
 ## What I found
@@ -49,6 +49,8 @@ Free-trial ads got about 20% more clicks than the average ad on the same channel
 Once someone becomes a lead, the step that loses the most people is between sales-qualified lead and customer, and that's true for every channel. Only a quarter of SQLs buy, which is more of a sales and pricing question than a marketing one.
 
 The cleaning step caught 403 duplicate ad rows, 15 negative spend values, 20 rows with more clicks than impressions, 2,618 channel names spelled differently (facebook, FB Ads, meta...), 1,277 visits with no device, and 30 duplicate leads from the CRM. It also flagged a day in August where Google Display billed spend but reported zero impressions. Details are in [output/00_data_quality.csv](output/00_data_quality.csv).
+
+Cleaning only catches rows that are impossible on their own, so `src/anomalies.py` also looks for days that are wrong compared with the weeks before: each paid channel's click-through rate, CPM and impressions per dollar against a 28-day rolling median and MAD. It finds all three problems I planted (the week of under-reported Meta clicks in March, the Display day with spend but no impressions, and LinkedIn's price jump in October) plus five one-day blips. It also caught a mistake of mine: my first cleaning rule capped impossible click counts at the impression count, which still left those rows at a 100% click rate. They're now re-estimated from the same ad's usual click rate.
 
 All of this is from the generated data (seed 42), so the numbers are only as real as my assumptions. The SQL doesn't care where the data comes from, though. Real exports from Google Ads, Meta, GA4 and a CRM mapped to the same columns would work the same way.
 
@@ -145,6 +147,7 @@ src/
   attribution.py        Markov chain and Shapley attribution
   lead_scoring.py       XGBoost and logistic regression lead scoring
   mmm.py                marketing mix model and budget optimiser
+  anomalies.py          flags days where a channel's numbers look wrong
   hillstrom.py          the real email experiment
   build_site.py         bundles the outputs into one JSON file for the site
   agent_cli.py          runs the agents from the command line
@@ -154,11 +157,12 @@ sql/
   analysis/             the ten analysis queries
   real/                 loading and cleaning the Hillstrom data
 evals/                  32 golden questions and the eval runner for the analyst agent
-tests/                  54 tests: pipeline, models, agents and the experiment stats
+tests/                  59 tests: pipeline, models, agents, anomalies and the experiment stats
 site/                   the dashboard: index.html, style.css, app.js
 output/                 every result as CSV, plus marketing_report.xlsx
 docs/                   notes on the plan and real data sources, and a data dictionary
-.github/workflows/      ci.yml runs the tests, pages.yml rebuilds and publishes the site
+.github/workflows/      ci.yml runs lint and tests, pages.yml rebuilds and publishes the site
+Makefile                shortcuts for the commands under "Running it"
 ```
 
 Raw CSVs go into DuckDB, get cleaned in `sql/model/01_staging.sql`, and end up as a small star schema in `sql/model/02_marts.sql` (every column is described in [docs/data-dictionary.md](docs/data-dictionary.md)):
@@ -211,6 +215,8 @@ python evals/run_evals.py
 ```
 
 The `ask`, `quality` and `brief` commands save what they produce to `output/agents/`, and the eval writes `evals/results/latest.csv`.
+
+There's also a Makefile with the same steps: `make setup`, then `make all` runs data, analysis, lint, tests and the site data in one go (`make help` lists the rest).
 
 Results go to `output/`, one CSV per query or model output plus an Excel file with everything in it. The whole thing takes about 20 seconds after the first run, which also downloads the 4 MB Hillstrom file. Add `--skip-models` to only run the SQL, or `--skip-real` to leave out the real dataset. The tests check things like the funnel never getting bigger, spend totals matching, attribution credit adding up to one per lead, the Shapley code against small cases worked out by hand, the lead model not using anything from after the form was filled in, and the MMM getting the biggest channel's effect back within 15%.
 

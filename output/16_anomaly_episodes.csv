@@ -1,0 +1,10 @@
+channel,metric,label,direction,start,end,days,worst_z
+Meta Ads,ctr,click-through rate,low,2025-03-10,2025-03-16,7,11.16
+LinkedIn Ads,ctr,click-through rate,high,2025-03-30,2025-03-30,1,4.17
+Affiliate,ctr,click-through rate,high,2025-05-02,2025-05-02,1,4.01
+TikTok Ads,ctr,click-through rate,low,2025-05-17,2025-05-17,1,7.4
+TikTok Ads,ctr,click-through rate,low,2025-06-21,2025-06-21,1,4.72
+Meta Ads,ctr,click-through rate,low,2025-08-08,2025-08-08,1,5.28
+Google Display,impr_per_dollar,impressions per dollar,low,2025-08-14,2025-08-14,1,inf
+LinkedIn Ads,cpm,"cost per 1,000 impressions",high,2025-10-01,2025-10-14,14,13.2
+LinkedIn Ads,impr_per_dollar,impressions per dollar,low,2025-10-01,2025-10-14,14,9.49

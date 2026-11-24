@@ -84,7 +84,7 @@
       </article>
       <article class="skill">
         <h3>Engineering</h3>
-        <p>A reproducible data generator with problems planted on purpose, 54 pytest tests, and GitHub Actions that rebuild the data, rerun every model and publish this site on every push. The real dataset downloads with a checksum check and is cached in CI.</p>
+        <p>A reproducible data generator with problems planted on purpose, 59 pytest tests, a ruff lint step, and GitHub Actions that rebuild the data, rerun every model and publish this site on every push. The real dataset downloads with a checksum check and is cached in CI.</p>
         <a href="https://github.com/ThanushreeSiddaraju/marketing-analytics/tree/main/tests">tests/</a>
       </article>
       <article class="skill">
@@ -214,6 +214,10 @@
     <h2>What the cleaning step fixed</h2>
     <p>I put problems into the raw data on purpose, the kind that turn up in real exports, and the staging SQL fixes them. The tests check that none of them make it into the final tables.</p>
     <div class="card"><div class="table-wrap" id="table-quality"></div></div>
+    <h3 class="sub">Days the numbers looked wrong</h3>
+    <p>Cleaning catches rows that are impossible on their own. Some problems only show up over time, like a tracking pixel that stops firing for a week. So for each paid channel and day I compare click-through rate, CPM and impressions per dollar with the median of the previous four weeks, and flag anything more than four robust standard deviations out. It found all three problems I'd planted, plus a handful of one-day blips, which is about what noise looks like at this threshold.</p>
+    <p>It also caught a mistake of mine. My first cleaning rule capped clicks at impressions for the rows that reported more clicks than impressions, which still left those rows at a 100% click rate, and nearly every one-day spike the check flagged landed on one of them. Those clicks are now re-estimated from the same ad's normal click rate.</p>
+    <div class="card"><div class="table-wrap" id="table-anomalies"></div></div>
   </section>
 
   <section id="agents">

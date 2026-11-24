@@ -50,6 +50,23 @@ def build(out_dir: Path) -> dict:
     lead_metrics = r("12_lead_scoring_metrics")
     pooled = lead_metrics[lead_metrics.test_month.astype(str) == "all"]
 
+    anomalies = None
+    if (out_dir / "16_anomaly_episodes.csv").exists():
+        ep = r("16_anomaly_episodes")
+        # What I know caused each planted problem, so the table can say so.
+        planted = {
+            ("Meta Ads", "ctr"): "planted: tracking outage, clicks under-reported",
+            ("Google Display", "impr_per_dollar"): "planted: spend billed with no impressions",
+            ("LinkedIn Ads", "cpm"): "planted: Q4 auction prices up 35%",
+            ("LinkedIn Ads", "impr_per_dollar"): "same LinkedIn price jump",
+        }
+        ep["note"] = [planted.get((c, m), "one-day blip") if d > 1 or (c, m) in
+                      {("Google Display", "impr_per_dollar")} else "one-day blip"
+                      for c, m, d in zip(ep.channel, ep.metric, ep.days, strict=True)]
+        ep["start"] = ep.start.astype(str).str[:10]
+        ep["end"] = ep.end.astype(str).str[:10]
+        anomalies = records(ep, ["channel", "metric", "direction", "start", "end", "days", "note"])
+
     real = None
     if (out_dir / "15_hillstrom_effects.csv").exists():
         seg = r("15_hillstrom_segments")
@@ -65,6 +82,7 @@ def build(out_dir: Path) -> dict:
     return {
         "built": date.today().isoformat(),
         "real": real,
+        "anomalies": anomalies,
         "kpi": records(r("10_kpi_summary"))[0],
         "channels": records(ch, ["channel", "channel_type", "spend", "leads", "customers", "revenue", "ctr",
                                  "cost_per_lead", "cac", "roas", "ltv_to_cac", "payback_months", "monthly_churn"]),
