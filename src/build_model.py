@@ -24,7 +24,7 @@ QUALITY_CHECKS = [
     ("Negative spend", "ad_daily", "SELECT COUNT(*) FROM raw_ad_daily WHERE spend < 0",
      "Sign flipped to positive"),
     ("Clicks greater than impressions", "ad_daily", "SELECT COUNT(*) FROM raw_ad_daily WHERE clicks > impressions",
-     "Clicks capped at impressions"),
+     "Clicks re-estimated from the creative's usual click rate"),
     ("Spend over $2 billed with zero impressions", "ad_daily",
      "SELECT COUNT(*) FROM raw_ad_daily WHERE impressions = 0 AND spend > 2",
      "Kept (reporting outage, spend is real)"),

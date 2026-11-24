@@ -30,20 +30,38 @@ FROM raw_campaigns;
 CREATE OR REPLACE TABLE stg_creatives AS
 SELECT * FROM raw_creatives;
 
--- Ad platform rows: drop exact duplicates, fix sign-flipped spend,
--- cap clicks at impressions (a click needs an impression).
+-- Ad platform rows: drop exact duplicates and fix sign-flipped spend.
+-- A few rows report more clicks than impressions, which can't happen. Capping
+-- clicks at impressions still leaves those rows at a 100% click rate (the
+-- anomaly check flagged every one of those days), so instead their clicks are
+-- re-estimated from the same creative's click rate on its other, valid rows.
 CREATE OR REPLACE TABLE stg_ad_daily AS
-SELECT DISTINCT
-    CAST(date AS DATE)                    AS date,
-    campaign_id,
-    creative_id,
-    device,
-    region,
-    CAST(impressions AS BIGINT)           AS impressions,
-    CAST(LEAST(clicks, impressions) AS BIGINT) AS clicks,
-    -- stored as an exact decimal so totals don't depend on the order rows are added up
-    CAST(ROUND(ABS(CAST(spend AS DOUBLE)), 2) AS DECIMAL(14, 2)) AS spend
-FROM raw_ad_daily;
+WITH dedup AS (
+    SELECT DISTINCT
+        CAST(date AS DATE)                    AS date,
+        campaign_id,
+        creative_id,
+        device,
+        region,
+        CAST(impressions AS BIGINT)           AS impressions,
+        CAST(clicks AS BIGINT)                AS clicks,
+        -- stored as an exact decimal so totals don't depend on the order rows are added up
+        CAST(ROUND(ABS(CAST(spend AS DOUBLE)), 2) AS DECIMAL(14, 2)) AS spend
+    FROM raw_ad_daily
+), creative_ctr AS (
+    SELECT creative_id, SUM(clicks)::DOUBLE / NULLIF(SUM(impressions), 0) AS ctr
+    FROM dedup
+    WHERE clicks <= impressions
+    GROUP BY creative_id
+)
+SELECT
+    d.date, d.campaign_id, d.creative_id, d.device, d.region, d.impressions,
+    CASE WHEN d.clicks > d.impressions
+         THEN CAST(ROUND(d.impressions * COALESCE(c.ctr, 0)) AS BIGINT)
+         ELSE d.clicks END                AS clicks,
+    d.spend
+FROM dedup d
+LEFT JOIN creative_ctr c USING (creative_id);
 
 CREATE OR REPLACE TABLE stg_sessions AS
 SELECT

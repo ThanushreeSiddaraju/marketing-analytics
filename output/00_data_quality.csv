@@ -1,7 +1,7 @@
 check,table,rows_affected,action
 Exact duplicate ad rows,ad_daily,403,Dropped duplicates
 Negative spend,ad_daily,15,Sign flipped to positive
-Clicks greater than impressions,ad_daily,20,Clicks capped at impressions
+Clicks greater than impressions,ad_daily,20,Clicks re-estimated from the creative's usual click rate
 Spend over $2 billed with zero impressions,ad_daily,16,"Kept (reporting outage, spend is real)"
 Non-standard channel names,sessions,2618,Mapped to standard names
 Missing device,sessions,1277,Set to 'unknown'

@@ -16,7 +16,7 @@ One row per day, creative, device and region, from the ad platforms.
 | device | VARCHAR | desktop, mobile or tablet |
 | region | VARCHAR | North America, Europe, APAC or LATAM |
 | impressions | BIGINT | Times the ad was shown (sends, for email) |
-| clicks | BIGINT | Clicks, capped at impressions during cleaning |
+| clicks | BIGINT | Clicks; the few raw rows with more clicks than impressions are re-estimated from that creative's usual click rate |
 | spend | DECIMAL(14,2) | Cost in USD, stored as an exact decimal so totals don't drift |
 | channel | VARCHAR | Channel, joins to dim_channel |
 

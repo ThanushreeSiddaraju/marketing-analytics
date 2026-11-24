@@ -39,6 +39,8 @@ def q(built, sql):
 def test_cleaning_fixed_every_injected_issue(built):
     assert q(built, "SELECT COUNT(*) FROM fact_ad_daily WHERE spend < 0") == 0
     assert q(built, "SELECT COUNT(*) FROM fact_ad_daily WHERE clicks > impressions") == 0
+    # the impossible rows are re-estimated, not just capped at a 100% click rate
+    assert q(built, "SELECT COUNT(*) FROM fact_ad_daily WHERE clicks = impressions AND impressions > 20") == 0
     assert q(built, "SELECT COUNT(*) - COUNT(DISTINCT lead_id) FROM fact_leads") == 0
     assert q(built, "SELECT COUNT(*) FROM fact_sessions WHERE device IS NULL") == 0
     channels = {r[0] for r in built["con"].execute("SELECT DISTINCT channel FROM fact_sessions").fetchall()}
