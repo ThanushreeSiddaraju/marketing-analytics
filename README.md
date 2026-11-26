@@ -1,5 +1,7 @@
 # Marketing Analytics
 
+[![CI](https://github.com/ThanushreeSiddaraju/marketing-analytics/actions/workflows/ci.yml/badge.svg)](https://github.com/ThanushreeSiddaraju/marketing-analytics/actions/workflows/ci.yml)
+
 The dashboard is at https://thanushreesiddaraju.github.io/marketing-analytics/
 
 I wanted a project that looks at marketing the way a growth team actually does: which channels bring in paying customers, where people drop off between seeing an ad and paying, and where the budget should go next month.
@@ -19,7 +21,7 @@ I built the whole thing myself, from the data to the page it's published on:
 - Mix modelling and optimisation: adstock and saturation curves with weak priors, bootstrap intervals, parameter recovery against known truth, and a constrained budget optimiser.
 - Experiments and statistics: a real 64,000-customer randomised email test with sample ratio and balance checks, Welch intervals, Holm correction, CUPED, power analysis, segment effects and a held-out targeting check.
 - LLM agents: four agents on the Anthropic SDK with tool use and structured outputs, two layers of SQL lockdown, every number re-checked in code, a reviewer agent and a 32-question eval.
-- Engineering: a reproducible generator with planted data problems, 59 pytest tests, a ruff lint step, and GitHub Actions that rebuild the data, rerun every model and publish the site on every push.
+- Engineering: a reproducible generator with planted data problems, a data contract that rejects broken files before loading, 67 pytest tests, a ruff lint step, CI on Python 3.12 and 3.13, and GitHub Actions that rebuild the data, rerun every model and publish the site on every push.
 - Data visualisation: hand-written SVG charts with no chart library, a colour-blind-checked palette, light and dark modes, tooltips and a table behind every chart.
 
 ## What I found
@@ -49,6 +51,8 @@ Free-trial ads got about 20% more clicks than the average ad on the same channel
 Once someone becomes a lead, the step that loses the most people is between sales-qualified lead and customer, and that's true for every channel. Only a quarter of SQLs buy, which is more of a sales and pricing question than a marketing one.
 
 The cleaning step caught 403 duplicate ad rows, 15 negative spend values, 20 rows with more clicks than impressions, 2,618 channel names spelled differently (facebook, FB Ads, meta...), 1,277 visits with no device, and 30 duplicate leads from the CRM. It also flagged a day in August where Google Display billed spend but reported zero impressions. Details are in [output/00_data_quality.csv](output/00_data_quality.csv).
+
+Before cleaning runs, `src/contracts.py` checks every raw file against a data contract: the expected columns are there, values parse as the right type, id columns aren't blank, and dates fall in 2025. The planted problems above are messy but valid, so they pass and get cleaned. A file that's actually broken, like a renamed column or a batch from the wrong year, stops the build with a list of everything wrong instead of quietly producing bad numbers.
 
 Cleaning only catches rows that are impossible on their own, so `src/anomalies.py` also looks for days that are wrong compared with the weeks before: each paid channel's click-through rate, CPM and impressions per dollar against a 28-day rolling median and MAD. It finds all three problems I planted (the week of under-reported Meta clicks in March, the Display day with spend but no impressions, and LinkedIn's price jump in October) plus five one-day blips. It also caught a mistake of mine: my first cleaning rule capped impossible click counts at the impression count, which still left those rows at a 100% click rate. They're now re-estimated from the same ad's usual click rate.
 
@@ -142,6 +146,7 @@ The tests in `tests/test_agents.py` don't call the API. A fake client plays back
 ```
 src/
   make_sample_data.py   generates the Lumora data, with planted data problems
+  contracts.py          checks each raw file has the right columns, types and dates before loading
   build_model.py        loads the raw CSVs into DuckDB and runs the model SQL
   run_analysis.py       runs everything below and writes output/
   attribution.py        Markov chain and Shapley attribution
@@ -157,7 +162,7 @@ sql/
   analysis/             the ten analysis queries
   real/                 loading and cleaning the Hillstrom data
 evals/                  32 golden questions and the eval runner for the analyst agent
-tests/                  59 tests: pipeline, models, agents, anomalies and the experiment stats
+tests/                  67 tests: pipeline, contracts, models, agents, anomalies and the experiment stats
 site/                   the dashboard: index.html, style.css, app.js
 output/                 every result as CSV, plus marketing_report.xlsx
 docs/                   notes on the plan and real data sources, and a data dictionary

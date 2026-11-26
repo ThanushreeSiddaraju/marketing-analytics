@@ -37,5 +37,5 @@ Done: a static page on GitHub Pages, rebuilt by GitHub Actions on every push. Th
 ## Also want to add
 
 - dbt models with tests
-- schema checks at the point raw data comes in
+- ~~schema checks at the point raw data comes in~~ done, in `src/contracts.py`
 - a second real dataset with ads and sessions in it, probably the GA4 sample (the Hillstrom email test is in, see data-sources.md)
