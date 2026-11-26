@@ -7,4 +7,4 @@ select = ["E", "F", "W", "I", "B", "UP"]
 ignore = ["E501"]
 
 [lint.isort]
-known-first-party = ["agents", "attribution", "build_model", "hillstrom", "lead_scoring", "mmm", "run_analysis"]
+known-first-party = ["agents", "anomalies", "contracts", "attribution", "build_model", "hillstrom", "lead_scoring", "mmm", "run_analysis"]

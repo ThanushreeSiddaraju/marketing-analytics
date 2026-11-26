@@ -1,4 +1,4 @@
-"""Load raw CSVs into DuckDB, clean them, and build the star schema.
+"""Check raw CSVs against the data contract, load them into DuckDB, clean them, and build the star schema.
 
 Also writes output/00_data_quality.csv: what was wrong in the raw data and how
 many rows each cleaning rule touched.
@@ -12,6 +12,8 @@ from pathlib import Path
 
 import duckdb
 import pandas as pd
+
+from contracts import validate
 
 ROOT = Path(__file__).resolve().parents[1]
 MODEL_SQL = sorted((ROOT / "sql" / "model").glob("*.sql"))
@@ -39,6 +41,7 @@ QUALITY_CHECKS = [
 
 
 def build(raw: Path, db: Path) -> pd.DataFrame:
+    validate(raw)  # stop here with a clear message if a file isn't what the model expects
     db.parent.mkdir(parents=True, exist_ok=True)
     con = duckdb.connect(str(db))
     try:
