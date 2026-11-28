@@ -83,6 +83,10 @@ def build(out_dir: Path) -> dict:
         "built": date.today().isoformat(),
         "real": real,
         "anomalies": anomalies,
+        "forecast": {
+            "backtest": records(r("17_forecast_backtest")),
+            "weekly": records(r("17_forecast_weekly").assign(week_ending=lambda d: d.week_ending.astype(str))),
+        } if (out_dir / "17_forecast_backtest.csv").exists() else None,
         "kpi": records(r("10_kpi_summary"))[0],
         "channels": records(ch, ["channel", "channel_type", "spend", "leads", "customers", "revenue", "ctr",
                                  "cost_per_lead", "cac", "roas", "ltv_to_cac", "payback_months", "monthly_churn"]),

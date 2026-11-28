@@ -318,6 +318,53 @@
     });
   }
 
+  // ---------------------------------------------------------------- chart: history then forecast with a range
+  function forecastChart(container, rows, o) {
+    const h = 240, top = 12, bottom = 28, left = 44, right = 12;
+    const { s, w } = makeSvg(container, h, o.title);
+    const plotW = w - left - right, plotH = h - top - bottom, y0 = top + plotH;
+    const max = niceMax(Math.max(...rows.map((r) => Math.max(r.actual ?? 0, r.high_80 ?? 0))));
+    const n = rows.length;
+    const sx = (i) => left + (i / (n - 1)) * plotW;
+    const sy = (v) => y0 - (v / max) * plotH;
+    for (const t of ticks(max)) {
+      el("line", { x1: left, x2: w - right, y1: sy(t), y2: sy(t), class: t === 0 ? "axis" : "grid" }, s);
+      text(s, left - 6, sy(t) + 4, tickFmt(t), { class: "tick", "text-anchor": "end" });
+    }
+    const label = (d) => new Date(d + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    const every = Math.ceil(n / Math.max(2, Math.floor(plotW / 70)));
+    rows.forEach((r, i) => { if (i % every === 0) text(s, sx(i), h - 8, label(r.week_ending), { class: "tick", "text-anchor": i === 0 ? "start" : "middle" }); });
+    const first = rows.findIndex((r) => r.forecast != null);
+    const last = first - 1;
+    el("line", { x1: sx(last), x2: sx(last), y1: top, y2: y0, class: "grid", "stroke-dasharray": "3 3" }, s);
+    text(s, sx(last) + 6, top + 10, "forecast", { class: "tick" });
+    const fIdx = [last, ...rows.map((_, i) => i).filter((i) => i >= first)];
+    const fVal = (i, k) => (i === last ? rows[i].actual : rows[i][k]);
+    const band = fIdx.map((i) => `${sx(i)},${sy(fVal(i, "high_80"))}`).join(" ") + " " +
+      [...fIdx].reverse().map((i) => `${sx(i)},${sy(fVal(i, "low_80"))}`).join(" ");
+    el("polygon", { points: band, fill: css("--s2"), "fill-opacity": 0.14 }, s);
+    const path = (idx, key) => idx.map((i, k) => `${k ? "L" : "M"}${sx(i).toFixed(1)},${sy(key(i)).toFixed(1)}`).join("");
+    const hist = rows.map((_, i) => i).filter((i) => rows[i].actual != null);
+    el("path", { d: path(hist, (i) => rows[i].actual), fill: "none", stroke: css("--s1"), "stroke-width": 2, "stroke-linejoin": "round" }, s);
+    el("path", { d: path(fIdx, (i) => fVal(i, "forecast")), fill: "none", stroke: css("--s2"), "stroke-width": 2, "stroke-linejoin": "round" }, s);
+    const cross = el("line", { y1: top, y2: y0, class: "crosshair", visibility: "hidden" }, s);
+    const dot = el("circle", { r: 4, stroke: css("--surface"), "stroke-width": 2, visibility: "hidden" }, s);
+    const hit = el("rect", { x: left, y: top, width: plotW, height: plotH, class: "hit" }, s);
+    const move = (e) => {
+      const r0 = s.getBoundingClientRect();
+      const i = Math.max(0, Math.min(n - 1, Math.round((((e.clientX - r0.left) / r0.width) * w - left) / plotW * (n - 1))));
+      const r = rows[i], isF = r.forecast != null, v = isF ? r.forecast : r.actual;
+      cross.setAttribute("x1", sx(i)); cross.setAttribute("x2", sx(i)); cross.setAttribute("visibility", "visible");
+      dot.setAttribute("cx", sx(i)); dot.setAttribute("cy", sy(v)); dot.setAttribute("fill", css(isF ? "--s2" : "--s1")); dot.setAttribute("visibility", "visible");
+      showTip(e, `<b>Week ending ${label(r.week_ending)}</b>` + (isF
+        ? tipRow(css("--s2"), "Forecast", fmt.int(r.forecast), "line") + tipRow(null, "80% range", `${fmt.int(r.low_80)} to ${fmt.int(r.high_80)}`)
+        : tipRow(css("--s1"), "Leads", fmt.int(r.actual), "line")));
+    };
+    hit.addEventListener("pointermove", move);
+    hit.addEventListener("pointerdown", move);
+    hit.addEventListener("pointerleave", () => { hideTip(); cross.setAttribute("visibility", "hidden"); dot.setAttribute("visibility", "hidden"); });
+  }
+
   // ---------------------------------------------------------------- page
   let D;
   function kpis() {
@@ -401,6 +448,10 @@
       });
     });
 
+    if (D.forecast) {
+      legend($("legend-forecast"), [{ color: "--s1", label: "Actual", shape: "line" }, { color: "--s2", label: "Forecast", shape: "line" }]);
+      forecastChart($("chart-forecast"), D.forecast.weekly, { title: "Weekly leads with forecast" });
+    }
     const budget = D.mmm.budget.filter((b) => b.channel !== "Total");
     legend($("legend-budget"), [{ color: "--s1", label: "Now" }, { color: "--s2", label: "Recommended" }]);
     pairedBars($("chart-budget"), budget, {
@@ -449,6 +500,21 @@
       { key: "signups_after_true", label: "After (true)", fmt: (v) => v.toFixed(1) }], D.mmm.budget);
     table($("table-quality"), [{ key: "check", label: "Problem" }, { key: "table", label: "Table" },
       { key: "rows_affected", label: "Rows", fmt: fmt.int }, { key: "action", label: "What the SQL does" }], D.quality);
+    if (D.forecast) {
+      table($("table-forecast"), [{ key: "method", label: "Method" }, { key: "mae", label: "Average error (leads a day)", fmt: (v) => v.toFixed(1) },
+        { key: "mape", label: "Average % error", fmt: (v) => fmt.pct(v, 0) },
+        { key: "inside_80pct_range", label: "Actuals inside the 80% range", fmt: (v) => fmt.pct(v, 0) }], D.forecast.backtest);
+      const bt = D.forecast.backtest, best = bt[0], second = bt[1];
+      const fw = D.forecast.weekly.filter((r) => r.forecast != null);
+      const hist = D.forecast.weekly.filter((r) => r.actual != null);
+      const avg = hist.slice(-4).reduce((a, r) => a + r.actual, 0) / 4;  // last four weeks, after the Black Friday spike
+      $("forecast-text").textContent =
+        `I tried three ways of forecasting daily leads and back-tested each one from ${best.forecasts / 14} starting points over the second half of the year, forecasting two weeks ahead using only what was known at the time. ` +
+        `${best.method} did best, off by ${best.mae.toFixed(1)} leads a day on average, but only just: the ${second.method.toLowerCase()} was ${second.mae.toFixed(1)}. ` +
+        `For January it expects about ${fmt.int(fw[0].forecast)} leads a week, in line with the last four weeks (${fmt.int(avg)} a week) once the Black Friday spike had passed. ` +
+        `The shaded range comes from how wrong the back-tests actually were, and it held ${fmt.pct(best.inside_80pct_range, 0)} of real values against a target of 80%. ` +
+        `It knows nothing about campaigns, so a launch or a Black Friday push would land outside it.`;
+    }
     if (D.anomalies) {
       const metricName = { ctr: "Click-through rate", cpm: "CPM", impr_per_dollar: "Impressions per dollar" };
       const day = (d) => new Date(d + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" });

@@ -14,7 +14,7 @@ Done:
 Still to do:
 
 - A proper Bayesian version of the MMM (PyMC-Marketing) to compare against, since my bootstrap intervals are a bit too narrow.
-- Forecast and anomaly flags on daily KPIs with statsforecast, plus a simple median/MAD check as a sanity baseline.
+- ~~Forecast and anomaly flags on daily KPIs~~ done: a median/MAD anomaly check (`src/anomalies.py`) and a back-tested Holt-Winters lead forecast (`src/forecast.py`). statsforecast could come later if the simple methods stop being enough.
 - A geo-lift test with CausalPy. (The A/B test part is done, on the real Hillstrom data: sample ratio check, balance, Holm-corrected effects, CUPED, power and a held-out targeting check.)
 
 ## Agents

@@ -21,7 +21,7 @@ I built the whole thing myself, from the data to the page it's published on:
 - Mix modelling and optimisation: adstock and saturation curves with weak priors, bootstrap intervals, parameter recovery against known truth, and a constrained budget optimiser.
 - Experiments and statistics: a real 64,000-customer randomised email test with sample ratio and balance checks, Welch intervals, Holm correction, CUPED, power analysis, segment effects and a held-out targeting check.
 - LLM agents: four agents on the Anthropic SDK with tool use and structured outputs, two layers of SQL lockdown, every number re-checked in code, a reviewer agent and a 32-question eval.
-- Engineering: a reproducible generator with planted data problems, a data contract that rejects broken files before loading, 67 pytest tests, a ruff lint step, CI on Python 3.12 and 3.13, and GitHub Actions that rebuild the data, rerun every model and publish the site on every push.
+- Engineering: a reproducible generator with planted data problems, a data contract that rejects broken files before loading, 73 pytest tests, a ruff lint step, CI on Python 3.12 and 3.13, and GitHub Actions that rebuild the data, rerun every model and publish the site on every push.
 - Data visualisation: hand-written SVG charts with no chart library, a colour-blind-checked palette, light and dark modes, tooltips and a table behind every chart.
 
 ## What I found
@@ -99,6 +99,10 @@ What matters for budget decisions is the cost of the next sign-up at today's spe
 
 Keeping total spend the same and moving no channel more than 50% from where it is now, the optimiser moves money out of Meta, Display and TikTok and into Search and LinkedIn. The model says that's worth 7.7% more sign-ups a week. Scored against the true curves it's 5.4%. So the direction is right and the size is a bit optimistic, which is about what I'd expect to see with a real MMM too.
 
+### Forecast
+
+`src/forecast.py` forecasts daily leads. I compared three methods: the same day last week, the average of the last four of that weekday, and Holt-Winters with a weekly pattern. I back-tested each one from 26 starting points over the second half of the year, forecasting two weeks ahead with only the data available at the time. Holt-Winters came out best, but only just (off by 6.3 leads a day against 6.6 for the weekday average), which is a useful thing to know before reaching for anything heavier. For January it expects about 209 leads a week, in line with December once the Black Friday spike had passed. The 80% range comes from how wrong the back-tests actually were rather than from the model's own assumptions, and it held 77% of real values. It knows nothing about campaigns, so a launch would land outside it.
+
 ## Real data: the Hillstrom email test
 
 Everything above runs on generated data, so I wanted at least one real campaign in here too. In 2008 Kevin Hillstrom published a test from an online retailer: 64,000 customers who had bought in the last year were randomly sent an email about men's merchandise, an email about women's merchandise, or nothing, and their site visits, purchases and spend were tracked for two weeks afterwards. `src/hillstrom.py` downloads the file from his site on the first run, checks it against a fixed checksum, loads it with `sql/real/01_hillstrom.sql`, and writes the `15_hillstrom_*` outputs.
@@ -153,6 +157,7 @@ src/
   lead_scoring.py       XGBoost and logistic regression lead scoring
   mmm.py                marketing mix model and budget optimiser
   anomalies.py          flags days where a channel's numbers look wrong
+  forecast.py           daily lead forecast, back-tested against simple baselines
   hillstrom.py          the real email experiment
   build_site.py         bundles the outputs into one JSON file for the site
   agent_cli.py          runs the agents from the command line
@@ -162,7 +167,7 @@ sql/
   analysis/             the ten analysis queries
   real/                 loading and cleaning the Hillstrom data
 evals/                  32 golden questions and the eval runner for the analyst agent
-tests/                  67 tests: pipeline, contracts, models, agents, anomalies and the experiment stats
+tests/                  73 tests: pipeline, contracts, models, forecast, agents, anomalies and the experiment stats
 site/                   the dashboard: index.html, style.css, app.js
 output/                 every result as CSV, plus marketing_report.xlsx
 docs/                   notes on the plan and real data sources, and a data dictionary
