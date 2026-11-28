@@ -1,0 +1,4 @@
+method,mae,mape,bias,inside_80pct_range,forecasts
+Holt-Winters,6.3116,0.2348,0.0098,0.7692,364
+weekday average,6.5852,0.2377,0.5728,0.7747,364
+same day last week,7.1951,0.2693,0.283,0.7912,364

@@ -5,6 +5,7 @@ Outputs (output/):
   01_... .. 10_... .csv       one CSV per analysis query
   11_... .. 14_... .csv       attribution models, lead scoring, MMM and budget split
   16_anomaly_*.csv            days where a channel's numbers looked wrong
+  17_forecast_*.csv           daily lead forecast and its back-test
   15_hillstrom_*.csv          the real email experiment (downloaded on first run)
   marketing_report.xlsx       all of the above, one sheet each
 
@@ -24,6 +25,7 @@ import pandas as pd
 
 import anomalies
 import attribution
+import forecast
 import hillstrom
 import lead_scoring
 import mmm
@@ -62,6 +64,7 @@ def main() -> None:
         results["11_attribution_comparison"] = attribution.summary_table(att)
         results.update(lead_scoring.run(args.db))
         results.update(anomalies.run(args.db))
+        results.update(forecast.run(args.db))
         m = mmm.run()
         m.pop("_weekly").to_csv(args.out / "13_mmm_weekly_data.csv", index=False)
         results.update(m)
